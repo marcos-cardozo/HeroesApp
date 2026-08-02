@@ -74,7 +74,9 @@ npm run start:prod
 
 ## API Endpoints
 
-### Registro de usuario
+### Autenticación
+
+#### Registro de usuario
 
 **POST** `/auth/register`
 
@@ -163,6 +165,147 @@ Authorization: Bearer <token-jwt>
 
 ---
 
+## Hábitos
+
+Todos los endpoints de hábitos requieren autenticación. Incluye el token JWT en el header `Authorization: Bearer <token>`.
+
+### Crear hábito
+
+**POST** `/habits`
+
+**Body:**
+```json
+{
+  "name": "Meditar",
+  "icon": "🧘"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid",
+  "userId": "uuid",
+  "name": "Meditar",
+  "icon": "🧘",
+  "currentStreak": 0,
+  "longestStreak": 0,
+  "active": true,
+  "createdAt": "2024-01-15T10:00:00.000Z"
+}
+```
+
+---
+
+### Listar hábitos activos
+
+**GET** `/habits`
+
+**Response (200):**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Meditar",
+    "icon": "🧘",
+    "currentStreak": 5,
+    "longestStreak": 10,
+    "active": true
+  }
+]
+```
+
+---
+
+### Ver detalle de hábito
+
+**GET** `/habits/:id`
+
+Obtiene el hábito con su historial de los últimos 30 días.
+
+**Response (200):**
+```json
+{
+  "id": "uuid",
+  "name": "Meditar",
+  "icon": "🧘",
+  "currentStreak": 5,
+  "longestStreak": 10,
+  "active": true,
+  "recentLogs": [
+    {
+      "id": "log-uuid",
+      "date": "2024-01-15",
+      "completedAt": "2024-01-15T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+**Errores:**
+- `404` - Hábito no encontrado
+- `403` - No tienes acceso a este hábito
+
+---
+
+### Editar hábito
+
+**PATCH** `/habits/:id`
+
+**Body:**
+```json
+{
+  "name": "Meditación",
+  "icon": "🧘‍♀️"
+}
+```
+
+---
+
+### Eliminar hábito (soft delete)
+
+**DELETE** `/habits/:id`
+
+Marca el hábito como inactivo. No lo borra de la base de datos.
+
+**Response:** `204 No Content`
+
+---
+
+### Completar hábito
+
+**POST** `/habits/:id/complete`
+
+Marca el hábito como completado para hoy. Actualiza la racha.
+
+**Response (200):**
+```json
+{
+  "id": "uuid",
+  "currentStreak": 6,
+  "longestStreak": 10,
+  ...
+}
+```
+
+**Errores:**
+- `400` - Ya completaste este hábito hoy
+
+---
+
+### Deshacer completado de hoy
+
+**DELETE** `/habits/:id/complete`
+
+Deshace el marcado de hoy y recalcula la racha.
+
+**Response:** `204 No Content`
+
+**Errores:**
+- `400` - No hay registro para deshacer hoy
+
+---
+
 ## Pruebas con curl
 
 ### Registrar un usuario
@@ -197,6 +340,43 @@ curl -X GET http://localhost:3000/auth/profile \
   -H "Authorization: Bearer <TU_TOKEN>"
 ```
 
+### Crear hábito
+
+```bash
+curl -X POST http://localhost:3000/habits \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TU_TOKEN>" \
+  -d '{"name": "Meditar", "icon": "🧘"}'
+```
+
+### Listar hábitos
+
+```bash
+curl -X GET http://localhost:3000/habits \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Ver detalle de un hábito
+
+```bash
+curl -X GET http://localhost:3000/habits/<HABIT_ID> \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Completar hábito
+
+```bash
+curl -X POST http://localhost:3000/habits/<HABIT_ID>/complete \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Deshacer completado
+
+```bash
+curl -X DELETE http://localhost:3000/habits/<HABIT_ID>/complete \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
 ## Desarrollo
 
 ### Scripts disponibles
@@ -226,13 +406,24 @@ src/
 │   │   └── jwt-auth.guard.ts
 │   └── strategies/        # Estrategias de Passport
 │       └── jwt.strategy.ts
-└── users/
-    ├── users.module.ts     # Módulo de usuarios
-    ├── users.service.ts    # Servicio de usuarios
+├── users/
+│   ├── users.module.ts     # Módulo de usuarios
+│   ├── users.service.ts    # Servicio de usuarios
+│   ├── dto/
+│   │   └── create-user.dto.ts
+│   └── entities/
+│       └── user.entity.ts  # Entidad User de TypeORM
+└── habits/
+    ├── habits.module.ts    # Módulo de hábitos
+    ├── habits.controller.ts # Controlador de hábitos
+    ├── habits.service.ts   # Servicio de hábitos
+    ├── habits.service.spec.ts # Tests unitarios
     ├── dto/
-    │   └── create-user.dto.ts
+    │   ├── create-habit.dto.ts
+    │   └── update-habit.dto.ts
     └── entities/
-        └── user.entity.ts  # Entidad User de TypeORM
+        ├── habit.entity.ts    # Entidad Habit
+        └── habit-log.entity.ts # Entidad HabitLog
 ```
 
 ## Base de datos
