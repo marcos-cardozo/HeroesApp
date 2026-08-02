@@ -23,6 +23,12 @@ import { User } from './users/entities/user.entity';
         entities: [User],
         synchronize: true,
         logging: configService.get('NODE_ENV') === 'development',
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
       }),
       inject: [ConfigService],
     }),
