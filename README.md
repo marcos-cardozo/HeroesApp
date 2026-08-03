@@ -437,6 +437,124 @@ Toggle: alterna entre completado y no completado.
 
 ---
 
+## Challenges
+
+Endpoints para retos/checklists globales con progreso por usuario.
+
+### Listar challenges activos
+
+**GET** `/challenges`
+
+Devuelve todos los challenges con el progreso del usuario autenticado.
+
+**Response:**
+```json
+[
+  {
+    "id": "uuid",
+    "slug": "modo-creativo",
+    "name": "Modo Creativo",
+    "description": "Mentalidad y bases",
+    "durationDays": 5,
+    "totalTasks": 5,
+    "progress": {
+      "completed": 2,
+      "total": 5,
+      "percentage": 40
+    }
+  }
+]
+```
+
+---
+
+### Ver detalle de challenge
+
+**GET** `/challenges/:slug`
+
+Incluye todas las secciones con sus items y el estado de completado de cada uno para el usuario.
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "slug": "modo-creativo",
+  "name": "Modo Creativo",
+  "progress": {
+    "completed": 1,
+    "total": 5,
+    "percentage": 20
+  },
+  "sections": [
+    {
+      "id": "uuid",
+      "title": "Inicio · Antes de empezar",
+      "progress": { "completed": 1, "total": 3 },
+      "items": [
+        {
+          "id": "uuid",
+          "title": "Entender qué es el Heroes Protocol",
+          "completed": true,
+          "completedAt": "2024-01-15T10:30:00.000Z"
+        },
+        {
+          "id": "uuid",
+          "title": "Entender por qué Modo Creativo es tan importante",
+          "completed": false,
+          "completedAt": null
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### Completar item de checklist
+
+**POST** `/challenges/:slug/items/:itemId/complete`
+
+Marca un item como completado para el usuario. Es idempotente (si ya estaba completado, no hace nada).
+
+**Response:**
+```json
+{
+  "message": "Item marcado como completado"
+}
+```
+
+**Errores:**
+- `404` - Challenge o item no encontrado
+
+---
+
+### Deshacer completado de item
+
+**DELETE** `/challenges/:slug/items/:itemId/complete`
+
+**Response:**
+```json
+{
+  "message": "Completado deshecho"
+}
+```
+
+---
+
+## Seed de Challenges
+
+Cargar datos iniciales de ejemplo:
+
+```bash
+npm run seed
+```
+
+Esto crea:
+- Challenge "modo-creativo" con 2 secciones y 5 items
+
+---
+
 ## Pruebas con curl
 
 ### Registrar un usuario
@@ -540,6 +658,27 @@ curl -X GET http://localhost:3000/calendar/today \
 
 ```bash
 curl -X GET "http://localhost:3000/calendar/events?from=2024-01-15&to=2024-01-21" \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Listar challenges con progreso
+
+```bash
+curl -X GET http://localhost:3000/challenges \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Ver detalle de un challenge
+
+```bash
+curl -X GET http://localhost:3000/challenges/modo-creativo \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Completar un item de checklist
+
+```bash
+curl -X POST http://localhost:3000/challenges/modo-creativo/items/<ITEM_ID>/complete \
   -H "Authorization: Bearer <TU_TOKEN>"
 ```
 

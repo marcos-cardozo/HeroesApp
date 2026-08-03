@@ -5,10 +5,15 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { HabitsModule } from './habits/habits.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { ChallengesModule } from './challenges/challenges.module';
 import { User } from './users/entities/user.entity';
 import { Habit } from './habits/entities/habit.entity';
 import { HabitLog } from './habits/entities/habit-log.entity';
 import { CalendarEvent } from './calendar/entities/calendar-event.entity';
+import { Challenge } from './challenges/entities/challenge.entity';
+import { ChecklistSection } from './challenges/entities/checklist-section.entity';
+import { ChecklistItem } from './challenges/entities/checklist-item.entity';
+import { UserChecklistProgress } from './challenges/entities/user-checklist-progress.entity';
 
 @Module({
   imports: [
@@ -25,7 +30,7 @@ import { CalendarEvent } from './calendar/entities/calendar-event.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Habit, HabitLog, CalendarEvent],
+        entities: [User, Habit, HabitLog, CalendarEvent, Challenge, ChecklistSection, ChecklistItem, UserChecklistProgress],
         synchronize: true,
         logging: configService.get('NODE_ENV') === 'development',
         ssl: true,
@@ -41,6 +46,7 @@ import { CalendarEvent } from './calendar/entities/calendar-event.entity';
     UsersModule,
     HabitsModule,
     CalendarModule,
+    ChallengesModule,
   ],
 })
 export class AppModule {}
