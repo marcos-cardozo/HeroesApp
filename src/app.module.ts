@@ -4,9 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { HabitsModule } from './habits/habits.module';
+import { CalendarModule } from './calendar/calendar.module';
 import { User } from './users/entities/user.entity';
 import { Habit } from './habits/entities/habit.entity';
 import { HabitLog } from './habits/entities/habit-log.entity';
+import { CalendarEvent } from './calendar/entities/calendar-event.entity';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { HabitLog } from './habits/entities/habit-log.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Habit, HabitLog],
+        entities: [User, Habit, HabitLog, CalendarEvent],
         synchronize: true,
         logging: configService.get('NODE_ENV') === 'development',
         ssl: true,
@@ -38,6 +40,7 @@ import { HabitLog } from './habits/entities/habit-log.entity';
     AuthModule,
     UsersModule,
     HabitsModule,
+    CalendarModule,
   ],
 })
 export class AppModule {}

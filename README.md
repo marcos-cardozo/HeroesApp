@@ -306,6 +306,137 @@ Deshace el marcado de hoy y recalcula la racha.
 
 ---
 
+## Calendario
+
+Todos los endpoints requieren autenticación JWT.
+
+### Cálculo de períodos
+
+Los eventos se agrupan dinámicamente según la hora de inicio:
+- **MORNING**: antes de las 12:00
+- **AFTERNOON**: 12:00 - 17:59
+- **EVENING**: desde las 18:00
+
+### Crear evento
+
+**POST** `/calendar/events`
+
+```json
+{
+  "title": "Reunión de equipo",
+  "description": "Discussión del sprint",
+  "date": "2024-01-15",
+  "startTime": "10:00",
+  "endTime": "11:00",
+  "isRecurring": true,
+  "recurrenceRule": "WEEKLY"
+}
+```
+
+**Enums disponibles:**
+- `recurrenceRule`: `DAILY`, `WEEKLY`, `WEEKDAYS`
+
+---
+
+### Listar eventos por rango
+
+**GET** `/calendar/events?from=2024-01-15&to=2024-01-21`
+
+Incluye eventos manuales y hábitos expandidos como eventos virtuales.
+
+**Response:**
+```json
+[
+  {
+    "id": "uuid",
+    "title": "Reunión de equipo",
+    "date": "2024-01-15",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "type": "event",
+    "period": "MORNING",
+    "completed": false
+  },
+  {
+    "id": "habit-habit-uuid-2024-01-15",
+    "title": "Ejercicio",
+    "date": "2024-01-15",
+    "startTime": "09:00",
+    "type": "habit",
+    "period": "MORNING",
+    "completed": false
+  }
+]
+```
+
+---
+
+### Ver eventos de un día (agrupados)
+
+**GET** `/calendar/day/2024-01-15`
+
+Respuesta lista para la vista del calendario:
+
+```json
+{
+  "MORNING": [
+    { "id": "uuid", "title": "Ejercicio", "startTime": "09:00", "period": "MORNING", ... }
+  ],
+  "AFTERNOON": [
+    { "id": "uuid", "title": "Reunión", "startTime": "14:00", "period": "AFTERNOON", ... }
+  ],
+  "EVENING": []
+}
+```
+
+---
+
+### Eventos de hoy (para Dashboard)
+
+**GET** `/calendar/today`
+
+Misma estructura que `/calendar/day/:date`, pero usa la fecha actual.
+
+---
+
+### Ver detalle de evento
+
+**GET** `/calendar/events/:id`
+
+---
+
+### Editar evento
+
+**PATCH** `/calendar/events/:id`
+
+```json
+{
+  "title": "Nuevo título",
+  "startTime": "15:00",
+  "endTime": "16:00"
+}
+```
+
+**Nota:** No se pueden editar eventos de tipo `habit`.
+
+---
+
+### Eliminar evento
+
+**DELETE** `/calendar/events/:id`
+
+**Nota:** No se pueden eliminar eventos de tipo `habit`.
+
+---
+
+### Marcar/desmarcar como completado
+
+**PATCH** `/calendar/events/:id/complete`
+
+Toggle: alterna entre completado y no completado.
+
+---
+
 ## Pruebas con curl
 
 ### Registrar un usuario
@@ -374,6 +505,41 @@ curl -X POST http://localhost:3000/habits/<HABIT_ID>/complete \
 
 ```bash
 curl -X DELETE http://localhost:3000/habits/<HABIT_ID>/complete \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Crear evento de calendario
+
+```bash
+curl -X POST http://localhost:3000/calendar/events \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TU_TOKEN>" \
+  -d '{
+    "title": "Reunión de equipo",
+    "date": "2024-01-15",
+    "startTime": "10:00",
+    "endTime": "11:00"
+  }'
+```
+
+### Ver eventos del día (agrupados por período)
+
+```bash
+curl -X GET "http://localhost:3000/calendar/day/2024-01-15" \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Ver eventos de hoy
+
+```bash
+curl -X GET http://localhost:3000/calendar/today \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Listar eventos de la semana
+
+```bash
+curl -X GET "http://localhost:3000/calendar/events?from=2024-01-15&to=2024-01-21" \
   -H "Authorization: Bearer <TU_TOKEN>"
 ```
 
