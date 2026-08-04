@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Boss } from '../entities/boss.entity';
 import { BossQuestion } from '../entities/boss-question.entity';
+import { Challenge } from '../../challenges/entities/challenge.entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -8,7 +9,7 @@ dotenv.config();
 export async function seedBossFight(dataSource: DataSource): Promise<void> {
   const bossRepo = dataSource.getRepository(Boss);
   const questionRepo = dataSource.getRepository(BossQuestion);
-  const challengeRepo = dataSource.getRepository('Challenge');
+  const challengeRepo = dataSource.getRepository(Challenge);
 
   const existing = await bossRepo.findOne({ where: {} });
   if (existing) {
@@ -84,7 +85,7 @@ if (require.main === module) {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [Boss, BossQuestion],
+    entities: [Boss, BossQuestion, Challenge],
     ssl: true,
     extra: {
       ssl: {
