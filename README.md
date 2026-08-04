@@ -555,6 +555,162 @@ Esto crea:
 
 ---
 
+## Boss Fights
+
+Batallas contra bosses que se desbloquean al completar un challenge al 100%.
+
+### Listar todos los bosses
+
+**GET** `/boss-fights`
+
+Devuelve todos los bosses con su estado para el usuario.
+
+**Response:**
+```json
+{
+  "bosses": [
+    {
+      "id": "uuid",
+      "challengeSlug": "modo-creativo",
+      "name": "Boss Final - Modo Creativo",
+      "unlocked": false,
+      "defeated": false
+    }
+  ],
+  "totalDefeated": 0,
+  "totalBosses": 1
+}
+```
+
+---
+
+### Ver detalle de un boss
+
+**GET** `/boss-fights/:challengeSlug`
+
+Si no está desbloqueado (challenge < 100%), devuelve 403 con las tareas faltantes.
+
+**Response (desbloqueado):**
+```json
+{
+  "id": "uuid",
+  "name": "Boss Final - Modo Creativo",
+  "unlocked": true,
+  "defeated": false,
+  "totalQuestions": 5,
+  "maxFails": 3
+}
+```
+
+---
+
+### Iniciar intento de boss fight
+
+**POST** `/boss-fights/:challengeSlug/start`
+
+Solo funciona si el boss está desbloqueado. Retorna la primera pregunta.
+
+**Response:**
+```json
+{
+  "attemptId": "uuid",
+  "question": {
+    "id": "uuid",
+    "text": "¿Qué es el Heroes Protocol?",
+    "options": ["Un protocolo de comunicación", "Un sistema para construir hábitos", "..."],
+    "order": 1
+  },
+  "currentIndex": 0,
+  "totalQuestions": 5,
+  "failCount": 0,
+  "maxFails": 3
+}
+```
+
+---
+
+### Ver pregunta actual
+
+**GET** `/boss-fights/attempts/:attemptId/current-question`
+
+Si el intento terminó, devuelve el resultado final en vez de una pregunta.
+
+---
+
+### Responder pregunta
+
+**POST** `/boss-fights/attempts/:attemptId/answer`
+
+```json
+{
+  "selectedOptionIndex": 1
+}
+```
+
+**Respuesta si sigue en juego:**
+```json
+{
+  "type": "QUESTION",
+  "attemptId": "uuid",
+  "wasCorrect": true,
+  "question": { ... },
+  "currentIndex": 1,
+  "failCount": 0,
+  "maxFails": 3,
+  "totalQuestions": 5
+}
+```
+
+**Respuesta si gana (todas correctas):**
+```json
+{
+  "type": "RESULT",
+  "attemptId": "uuid",
+  "wasCorrect": true,
+  "status": "WON",
+  "correctCount": 5
+}
+```
+
+**Respuesta si pierde (fallos excedidos):**
+```json
+{
+  "type": "RESULT",
+  "attemptId": "uuid",
+  "wasCorrect": false,
+  "status": "LOST",
+  "failCount": 4,
+  "correctCount": 2
+}
+```
+
+---
+
+### Reintentar (si perdió)
+
+**POST** `/boss-fights/:challengeSlug/retry`
+
+Solo si tienes un intento LOST y no derrotaste al boss.
+
+---
+
+## Seed de Boss Fights
+
+```bash
+npm run seed:boss
+```
+
+O ejecutar todos los seeds:
+
+```bash
+npm run seed:all
+```
+
+Esto crea:
+- Boss "Boss Final - Modo Creativo" con 5 preguntas de ejemplo
+
+---
+
 ## Pruebas con curl
 
 ### Registrar un usuario
@@ -680,6 +836,29 @@ curl -X GET http://localhost:3000/challenges/modo-creativo \
 ```bash
 curl -X POST http://localhost:3000/challenges/modo-creativo/items/<ITEM_ID>/complete \
   -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Listar bosses
+
+```bash
+curl -X GET http://localhost:3000/boss-fights \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Iniciar boss fight
+
+```bash
+curl -X POST http://localhost:3000/boss-fights/modo-creativo/start \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Responder pregunta
+
+```bash
+curl -X POST http://localhost:3000/boss-fights/attempts/<ATTEMPT_ID>/answer \
+  -H "Authorization: Bearer <TU_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"selectedOptionIndex": 1}'
 ```
 
 ## Desarrollo
