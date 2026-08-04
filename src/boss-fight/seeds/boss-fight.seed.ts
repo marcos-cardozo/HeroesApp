@@ -85,7 +85,14 @@ if (require.main === module) {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [Boss, BossQuestion, Challenge],
+    entities: [
+      Boss,
+      BossQuestion,
+      Challenge,
+      require('../../challenges/entities/checklist-section.entity').ChecklistSection,
+      require('../../challenges/entities/checklist-item.entity').ChecklistItem,
+      require('../../challenges/entities/user-checklist-progress.entity').UserChecklistProgress,
+    ],
     ssl: true,
     extra: {
       ssl: {
