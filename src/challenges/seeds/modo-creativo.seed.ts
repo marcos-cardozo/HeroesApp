@@ -2,6 +2,9 @@ import { DataSource } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
 import { ChecklistSection } from '../entities/checklist-section.entity';
 import { ChecklistItem } from '../entities/checklist-item.entity';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export async function seedModoCreativo(dataSource: DataSource): Promise<void> {
   const challengeRepo = dataSource.getRepository(Challenge);
@@ -64,6 +67,12 @@ if (require.main === module) {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     entities: [Challenge, ChecklistSection, ChecklistItem],
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
   });
 
   dataSource.initialize().then(async () => {
