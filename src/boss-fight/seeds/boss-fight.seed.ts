@@ -92,6 +92,13 @@ if (require.main === module) {
       require('../../challenges/entities/checklist-section.entity').ChecklistSection,
       require('../../challenges/entities/checklist-item.entity').ChecklistItem,
       require('../../challenges/entities/user-checklist-progress.entity').UserChecklistProgress,
+      require('../../users/entities/user.entity').User,
+      require('../../habits/entities/habit.entity').Habit,
+      require('../../habits/entities/habit-log.entity').HabitLog,
+      require('../../calendar/entities/calendar-event.entity').CalendarEvent,
+      require('../../boss-fight/entities/user-boss-attempt.entity').UserBossAttempt,
+      require('../../boss-fight/entities/user-boss-answer.entity').UserBossAnswer,
+      require('../../boss-fight/entities/user-boss-defeat.entity').UserBossDefeat,
     ],
     ssl: true,
     extra: {
