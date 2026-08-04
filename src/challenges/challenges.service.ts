@@ -101,23 +101,18 @@ export class ChallengesService {
   async findBySlug(slug: string, userId: string): Promise<ChallengeDetailWithSections> {
     const challenge = await this.challengeRepository.findOne({
       where: { slug, active: true },
+      relations: ['sections', 'sections.items'],
     });
 
     if (!challenge) {
       throw new NotFoundException('Challenge no encontrado');
     }
 
-    const sections = await this.sectionRepository.find({
-      where: { challengeId: challenge.id },
-      relations: ['items'],
-      order: { order: 'ASC' },
-    });
-
     const progressMap = await this.getProgressMapForUser(userId);
     const allItemIds = this.getAllItemIdsFromChallenge(challenge);
     const completedCount = allItemIds.filter((id) => progressMap.has(id)).length;
 
-    const sectionsWithItems: SectionWithItems[] = sections.map((section) => {
+    const sectionsWithItems: SectionWithItems[] = (challenge.sections || []).sort((a, b) => a.order - b.order).map((section) => {
       const items = section.items.sort((a, b) => a.order - b.order);
       const sectionCompleted = items.filter((item) => progressMap.has(item.id)).length;
 
