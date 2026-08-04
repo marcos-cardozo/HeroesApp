@@ -7,6 +7,7 @@ import { BossQuestion } from './entities/boss-question.entity';
 import { UserBossAttempt } from './entities/user-boss-attempt.entity';
 import { UserBossAnswer } from './entities/user-boss-answer.entity';
 import { UserBossDefeat } from './entities/user-boss-defeat.entity';
+import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengesModule } from '../challenges/challenges.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { ChallengesModule } from '../challenges/challenges.module';
       UserBossAttempt,
       UserBossAnswer,
       UserBossDefeat,
+      Challenge,
     ]),
     ChallengesModule,
   ],

@@ -11,6 +11,7 @@ import { BossQuestion } from './entities/boss-question.entity';
 import { UserBossAttempt, AttemptStatus } from './entities/user-boss-attempt.entity';
 import { UserBossAnswer } from './entities/user-boss-answer.entity';
 import { UserBossDefeat } from './entities/user-boss-defeat.entity';
+import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengesService } from '../challenges/challenges.service';
 
 export interface BossWithStatus {
@@ -103,6 +104,8 @@ export class BossFightService {
     private answerRepository: Repository<UserBossAnswer>,
     @InjectRepository(UserBossDefeat)
     private defeatRepository: Repository<UserBossDefeat>,
+    @InjectRepository(Challenge)
+    private challengeRepository: Repository<Challenge>,
     private challengesService: ChallengesService,
   ) {}
 
@@ -143,8 +146,16 @@ export class BossFightService {
     slug: string,
     userId: string,
   ): Promise<BossDetailResponse> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { slug, active: true },
+    });
+
+    if (!challenge) {
+      throw new NotFoundException('Challenge no encontrado');
+    }
+
     const boss = await this.bossRepository.findOne({
-      where: { challenge: { slug } },
+      where: { challengeId: challenge.id },
     });
 
     if (!boss) {
@@ -184,8 +195,16 @@ export class BossFightService {
     slug: string,
     userId: string,
   ): Promise<StartAttemptResponse> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { slug, active: true },
+    });
+
+    if (!challenge) {
+      throw new NotFoundException('Challenge no encontrado');
+    }
+
     const boss = await this.bossRepository.findOne({
-      where: { challenge: { slug } },
+      where: { challengeId: challenge.id },
       relations: ['questions'],
     });
 
@@ -443,8 +462,16 @@ export class BossFightService {
   }
 
   async retryAttempt(slug: string, userId: string): Promise<StartAttemptResponse> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { slug, active: true },
+    });
+
+    if (!challenge) {
+      throw new NotFoundException('Challenge no encontrado');
+    }
+
     const boss = await this.bossRepository.findOne({
-      where: { challenge: { slug } },
+      where: { challengeId: challenge.id },
       relations: ['questions'],
     });
 
