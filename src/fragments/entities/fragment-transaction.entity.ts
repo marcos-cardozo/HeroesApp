@@ -36,8 +36,8 @@ export class FragmentTransaction {
   })
   reason: FragmentReason;
 
-  @Column({ name: 'related_boss_id', type: 'varchar', nullable: true })
-  relatedBossId: string | null;
+  @Column({ name: 'related_boss_id', nullable: true })
+  relatedBossId: string;
 
   @Column({ nullable: true })
   description: string | null;

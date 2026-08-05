@@ -64,7 +64,7 @@ export class FragmentsService {
       id: tx.id,
       amount: tx.amount,
       reason: tx.reason,
-      relatedBossId: tx.relatedBossId,
+      relatedBossId: tx.relatedBossId || null,
       description: tx.description,
       createdAt: tx.createdAt,
     }));
