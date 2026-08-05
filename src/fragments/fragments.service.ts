@@ -8,17 +8,17 @@ export interface BalanceResponse {
   totalEarned: number;
 }
 
-export interface TransactionWithBoss {
+export interface TransactionDto {
   id: string;
   amount: number;
   reason: FragmentReason;
-  relatedBossId: string | null;
-  description: string | null;
+  relatedBossId: string;
+  description: string;
   createdAt: Date;
 }
 
 export interface TransactionHistoryResponse {
-  transactions: TransactionWithBoss[];
+  transactions: TransactionDto[];
   total: number;
 }
 
@@ -60,12 +60,12 @@ export class FragmentsService {
       skip: offset,
     });
 
-    const result: TransactionWithBoss[] = transactions.map((tx) => ({
+    const result: TransactionDto[] = transactions.map((tx) => ({
       id: tx.id,
       amount: tx.amount,
       reason: tx.reason,
-      relatedBossId: tx.relatedBossId || null,
-      description: tx.description,
+      relatedBossId: tx.relatedBossId || '',
+      description: tx.description || '',
       createdAt: tx.createdAt,
     }));
 

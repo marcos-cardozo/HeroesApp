@@ -19,7 +19,7 @@ export class FragmentTransaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'varchar' })
   userId: string;
 
   @ManyToOne(() => User)
@@ -30,16 +30,17 @@ export class FragmentTransaction {
   amount: number;
 
   @Column({
+    name: 'reason',
     type: 'enum',
     enum: FragmentReason,
     default: FragmentReason.BOSS_DEFEATED,
   })
   reason: FragmentReason;
 
-  @Column({ nullable: true })
+  @Column({ name: 'related_boss_id', type: 'uuid', nullable: true })
   relatedBossId: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   description: string;
 
   @CreateDateColumn({ name: 'created_at' })

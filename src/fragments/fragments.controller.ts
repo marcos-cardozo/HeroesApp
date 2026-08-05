@@ -27,18 +27,16 @@ export class FragmentsController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    return this.fragmentsService.getTransactions(
-      req.user.id,
-      limit ? parseInt(limit, 10) : 20,
-      offset ? parseInt(offset, 10) : 0,
-    );
+    const parsedLimit = limit ? parseInt(limit, 10) : 20;
+    const parsedOffset = offset ? parseInt(offset, 10) : 0;
+    return this.fragmentsService.getTransactions(req.user.id, parsedLimit, parsedOffset);
   }
 
   @Post('spend')
   spend(
     @Request() req: { user: { id: string } },
-    @Body() dto: SpendFragmentDto,
+    @Body() spendDto: SpendFragmentDto,
   ) {
-    return this.fragmentsService.spend(req.user.id, dto.amount, dto.description);
+    return this.fragmentsService.spend(req.user.id, spendDto.amount, spendDto.description);
   }
 }

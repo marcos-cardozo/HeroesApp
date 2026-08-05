@@ -1,12 +1,12 @@
-import { IsInt, IsPositive, IsString, IsOptional, Min } from 'class-validator';
+import { IsInt, IsPositive, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class SpendFragmentDto {
   @IsInt()
   @IsPositive()
-  @Min(1)
   amount: number;
 
-  @IsString()
   @IsOptional()
+  @IsString()
+  @MaxLength(255)
   description?: string;
 }
