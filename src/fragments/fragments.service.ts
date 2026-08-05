@@ -92,7 +92,7 @@ export class FragmentsService {
         userId,
         amount: -amount,
         reason: FragmentReason.REDEMPTION,
-        description: description || null,
+        description: description || undefined,
       });
 
       const saved = await queryRunner.manager.save(transaction);
@@ -117,7 +117,6 @@ export class FragmentsService {
       amount,
       reason: FragmentReason.BOSS_DEFEATED,
       relatedBossId: bossId,
-      description: null,
     });
 
     return queryRunner.manager.save(transaction);

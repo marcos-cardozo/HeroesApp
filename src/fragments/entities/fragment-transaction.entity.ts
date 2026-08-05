@@ -40,7 +40,7 @@ export class FragmentTransaction {
   relatedBossId: string;
 
   @Column({ nullable: true })
-  description: string | null;
+  description: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
