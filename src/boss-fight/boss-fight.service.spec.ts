@@ -8,6 +8,7 @@ import { BossQuestion } from './entities/boss-question.entity';
 import { UserBossAttempt } from './entities/user-boss-attempt.entity';
 import { UserBossAnswer } from './entities/user-boss-answer.entity';
 import { UserBossDefeat } from './entities/user-boss-defeat.entity';
+import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengesService } from '../challenges/challenges.service';
 import { ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
 
@@ -18,6 +19,7 @@ describe('BossFightService', () => {
   let attemptRepo: jest.Mocked<Repository<UserBossAttempt>>;
   let answerRepo: jest.Mocked<Repository<UserBossAnswer>>;
   let defeatRepo: jest.Mocked<Repository<UserBossDefeat>>;
+  let challengeRepo: jest.Mocked<Repository<Challenge>>;
   let challengesService: jest.Mocked<ChallengesService>;
 
   const mockBoss = {
@@ -62,6 +64,7 @@ describe('BossFightService', () => {
             findOne: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
+            delete: jest.fn(),
           },
         },
         {
@@ -85,6 +88,12 @@ describe('BossFightService', () => {
             findBySlug: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(Challenge),
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -94,6 +103,7 @@ describe('BossFightService', () => {
     attemptRepo = module.get(getRepositoryToken(UserBossAttempt));
     answerRepo = module.get(getRepositoryToken(UserBossAnswer));
     defeatRepo = module.get(getRepositoryToken(UserBossDefeat));
+    challengeRepo = module.get(getRepositoryToken(Challenge));
     challengesService = module.get(ChallengesService);
   });
 
@@ -240,12 +250,39 @@ describe('BossFightService', () => {
 
   describe('startAttempt', () => {
     it('should throw ForbiddenException if boss not unlocked', async () => {
+      challengeRepo.findOne.mockResolvedValue({ id: 'challenge-1', slug: 'modo-creativo', active: true } as any);
       bossRepo.findOne.mockResolvedValue({ ...mockBoss, challenge: { slug: 'modo-creativo' } } as any);
       challengesService.findBySlug.mockResolvedValue({
         progress: { completed: 3, total: 5, percentage: 60 }
       } as any);
 
       await expect(service.startAttempt('modo-creativo', 'user-1')).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should return existing in-progress attempt if exists with currentQuestionIndex=0 (first question)', async () => {
+      const existingAttempt = {
+        id: 'attempt-existing',
+        userId: 'user-1',
+        bossId: 'boss-1',
+        status: AttemptStatus.IN_PROGRESS,
+        currentQuestionIndex: 0,
+        failCount: 0,
+        boss: mockBoss,
+      };
+
+      challengeRepo.findOne.mockResolvedValue({ id: 'challenge-1', slug: 'modo-creativo', active: true } as any);
+      bossRepo.findOne.mockResolvedValue(mockBoss as any);
+      challengesService.findBySlug.mockResolvedValue({
+        progress: { completed: 5, total: 5, percentage: 100 }
+      } as any);
+      attemptRepo.findOne.mockResolvedValue(existingAttempt as any);
+
+      const result = await service.startAttempt('modo-creativo', 'user-1');
+
+      expect(result.attemptId).toBe('attempt-existing');
+      expect(result.currentIndex).toBe(0);
+      expect(result.question.text).toBe('Pregunta 1');
+      expect(result.question.order).toBe(1);
     });
 
     it('should return existing in-progress attempt if exists', async () => {
@@ -259,6 +296,7 @@ describe('BossFightService', () => {
         boss: mockBoss,
       };
 
+      challengeRepo.findOne.mockResolvedValue({ id: 'challenge-1', slug: 'modo-creativo', active: true } as any);
       bossRepo.findOne.mockResolvedValue(mockBoss as any);
       challengesService.findBySlug.mockResolvedValue({
         progress: { completed: 5, total: 5, percentage: 100 }
@@ -269,6 +307,50 @@ describe('BossFightService', () => {
 
       expect(result.attemptId).toBe('attempt-existing');
       expect(result.currentIndex).toBe(1);
+    });
+  });
+
+  describe('retryAttempt', () => {
+    it('should cleanup existing IN_PROGRESS attempt and create new one', async () => {
+      challengeRepo.findOne.mockResolvedValue({ id: 'challenge-1', slug: 'modo-creativo', active: true } as any);
+      bossRepo.findOne.mockResolvedValue(mockBoss as any);
+      challengesService.findBySlug.mockResolvedValue({
+        progress: { completed: 5, total: 5, percentage: 100 }
+      } as any);
+      defeatRepo.findOne.mockResolvedValue(null);
+      attemptRepo.create.mockReturnValue({
+        id: 'new-attempt',
+        userId: 'user-1',
+        bossId: 'boss-1',
+        status: AttemptStatus.IN_PROGRESS,
+        currentQuestionIndex: 0,
+        failCount: 0,
+      } as any);
+      attemptRepo.save.mockResolvedValue({
+        id: 'new-attempt',
+        userId: 'user-1',
+        bossId: 'boss-1',
+        status: AttemptStatus.IN_PROGRESS,
+        currentQuestionIndex: 0,
+        failCount: 0,
+      } as any);
+
+      const result = await service.retryAttempt('modo-creativo', 'user-1');
+
+      expect(attemptRepo.delete).toHaveBeenCalledWith({ userId: 'user-1', bossId: 'boss-1' });
+      expect(result.attemptId).toBe('new-attempt');
+      expect(result.currentIndex).toBe(0);
+    });
+
+    it('should throw BadRequestException if boss already defeated', async () => {
+      challengeRepo.findOne.mockResolvedValue({ id: 'challenge-1', slug: 'modo-creativo', active: true } as any);
+      bossRepo.findOne.mockResolvedValue(mockBoss as any);
+      challengesService.findBySlug.mockResolvedValue({
+        progress: { completed: 5, total: 5, percentage: 100 }
+      } as any);
+      defeatRepo.findOne.mockResolvedValue({ userId: 'user-1', bossId: 'boss-1' } as any);
+
+      await expect(service.retryAttempt('modo-creativo', 'user-1')).rejects.toThrow(BadRequestException);
     });
   });
 });

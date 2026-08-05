@@ -225,9 +225,8 @@ export class BossFightService {
     });
 
     if (existingInProgress) {
-      const question = boss.questions.find(
-        (q) => q.order === existingInProgress.currentQuestionIndex,
-      );
+      const sortedQuestions = boss.questions.sort((a, b) => a.order - b.order);
+      const question = sortedQuestions[existingInProgress.currentQuestionIndex];
       if (!question) {
         throw new BadRequestException('No hay más preguntas disponibles');
       }
@@ -484,14 +483,6 @@ export class BossFightService {
       throw new ForbiddenException('Completa el challenge primero');
     }
 
-    const existingLost = await this.attemptRepository.findOne({
-      where: { userId, bossId: boss.id, status: AttemptStatus.LOST },
-    });
-
-    if (!existingLost) {
-      throw new BadRequestException('No tienes un intento perdido para reintentar');
-    }
-
     const defeated = await this.defeatRepository.findOne({
       where: { userId, bossId: boss.id },
     });
@@ -499,6 +490,12 @@ export class BossFightService {
     if (defeated) {
       throw new BadRequestException('Ya derrotaste a este boss');
     }
+
+    // Limpiar cualquier intento anterior (IN_PROGRESS o LOST) para permitir reintentar
+    await this.attemptRepository.delete({
+      userId,
+      bossId: boss.id,
+    });
 
     const sortedQuestions = boss.questions.sort((a, b) => a.order - b.order);
     if (sortedQuestions.length === 0) {
