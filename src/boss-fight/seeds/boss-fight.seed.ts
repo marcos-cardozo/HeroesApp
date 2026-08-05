@@ -29,6 +29,7 @@ export async function seedBossFight(dataSource: DataSource): Promise<void> {
     description: 'Demuestra tu conocimiento completando el quiz final',
     totalQuestions: 5,
     maxFails: 3,
+    rewardFragments: 10,
     order: 1,
   });
   await bossRepo.save(boss);

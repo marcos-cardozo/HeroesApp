@@ -7,6 +7,7 @@ import { HabitsModule } from './habits/habits.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { BossFightModule } from './boss-fight/boss-fight.module';
+import { FragmentsModule } from './fragments/fragments.module';
 import { User } from './users/entities/user.entity';
 import { Habit } from './habits/entities/habit.entity';
 import { HabitLog } from './habits/entities/habit-log.entity';
@@ -20,6 +21,7 @@ import { BossQuestion } from './boss-fight/entities/boss-question.entity';
 import { UserBossAttempt } from './boss-fight/entities/user-boss-attempt.entity';
 import { UserBossAnswer } from './boss-fight/entities/user-boss-answer.entity';
 import { UserBossDefeat } from './boss-fight/entities/user-boss-defeat.entity';
+import { FragmentTransaction } from './fragments/entities/fragment-transaction.entity';
 
 @Module({
   imports: [
@@ -36,7 +38,7 @@ import { UserBossDefeat } from './boss-fight/entities/user-boss-defeat.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Habit, HabitLog, CalendarEvent, Challenge, ChecklistSection, ChecklistItem, UserChecklistProgress, Boss, BossQuestion, UserBossAttempt, UserBossAnswer, UserBossDefeat],
+        entities: [User, Habit, HabitLog, CalendarEvent, Challenge, ChecklistSection, ChecklistItem, UserChecklistProgress, Boss, BossQuestion, UserBossAttempt, UserBossAnswer, UserBossDefeat, FragmentTransaction],
         synchronize: true,
         logging: configService.get('NODE_ENV') === 'development',
         ssl: true,
@@ -54,6 +56,7 @@ import { UserBossDefeat } from './boss-fight/entities/user-boss-defeat.entity';
     CalendarModule,
     ChallengesModule,
     BossFightModule,
+    FragmentsModule,
   ],
 })
 export class AppModule {}

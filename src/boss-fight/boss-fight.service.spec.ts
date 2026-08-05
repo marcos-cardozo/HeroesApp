@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { BossFightService } from './boss-fight.service';
 import { AttemptStatus } from './entities/user-boss-attempt.entity';
 import { Boss } from './entities/boss.entity';
@@ -10,6 +10,7 @@ import { UserBossAnswer } from './entities/user-boss-answer.entity';
 import { UserBossDefeat } from './entities/user-boss-defeat.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengesService } from '../challenges/challenges.service';
+import { FragmentsService } from '../fragments/fragments.service';
 import { ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('BossFightService', () => {
@@ -21,6 +22,8 @@ describe('BossFightService', () => {
   let defeatRepo: jest.Mocked<Repository<UserBossDefeat>>;
   let challengeRepo: jest.Mocked<Repository<Challenge>>;
   let challengesService: jest.Mocked<ChallengesService>;
+  let fragmentsService: jest.Mocked<FragmentsService>;
+  let dataSource: jest.Mocked<DataSource>;
 
   const mockBoss = {
     id: 'boss-1',
@@ -29,6 +32,7 @@ describe('BossFightService', () => {
     description: 'Boss de prueba',
     totalQuestions: 3,
     maxFails: 3,
+    rewardFragments: 10,
     order: 1,
     questions: [
       { id: 'q1', text: 'Pregunta 1', options: ['A', 'B', 'C', 'D'], correctOptionIndex: 1, order: 1 },
@@ -38,7 +42,21 @@ describe('BossFightService', () => {
     challenge: { slug: 'modo-creativo' },
   };
 
+  let mockQueryRunner: any;
+
   beforeEach(async () => {
+    mockQueryRunner = {
+      connect: jest.fn(),
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      rollbackTransaction: jest.fn(),
+      release: jest.fn(),
+      manager: {
+        save: jest.fn(),
+        create: jest.fn(),
+      },
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BossFightService,
@@ -94,6 +112,18 @@ describe('BossFightService', () => {
             findOne: jest.fn(),
           },
         },
+        {
+          provide: FragmentsService,
+          useValue: {
+            awardFragmentsTransactional: jest.fn(),
+          },
+        },
+        {
+          provide: DataSource,
+          useValue: {
+            createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
+          },
+        },
       ],
     }).compile();
 
@@ -105,6 +135,8 @@ describe('BossFightService', () => {
     defeatRepo = module.get(getRepositoryToken(UserBossDefeat));
     challengeRepo = module.get(getRepositoryToken(Challenge));
     challengesService = module.get(ChallengesService);
+    fragmentsService = module.get(FragmentsService);
+    dataSource = module.get(DataSource);
   });
 
   describe('answerQuestion - WIN flow', () => {
@@ -122,12 +154,14 @@ describe('BossFightService', () => {
       attemptRepo.findOne.mockResolvedValue(mockAttempt as any);
       answerRepo.save.mockResolvedValue({} as any);
       answerRepo.count.mockResolvedValue(3);
+      fragmentsService.awardFragmentsTransactional.mockResolvedValue({ id: 'tx-1', amount: 10 } as any);
 
       const result = await service.answerQuestion('attempt-1', 0, 'user-1');
 
       expect(result.type).toBe('RESULT');
       expect(result.status).toBe(AttemptStatus.WON);
-      expect(defeatRepo.save).toHaveBeenCalled();
+      expect(fragmentsService.awardFragmentsTransactional).toHaveBeenCalled();
+      expect(result.fragmentsEarned).toBe(10);
     });
 
     it('should NOT leak correctOptionIndex in response', async () => {

@@ -9,6 +9,7 @@ import { UserBossAnswer } from './entities/user-boss-answer.entity';
 import { UserBossDefeat } from './entities/user-boss-defeat.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengesModule } from '../challenges/challenges.module';
+import { FragmentsModule } from '../fragments/fragments.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ChallengesModule } from '../challenges/challenges.module';
       Challenge,
     ]),
     ChallengesModule,
+    FragmentsModule,
   ],
   controllers: [BossFightController],
   providers: [BossFightService],

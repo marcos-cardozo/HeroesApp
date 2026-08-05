@@ -668,7 +668,8 @@ Si el intento terminó, devuelve el resultado final en vez de una pregunta.
   "attemptId": "uuid",
   "wasCorrect": true,
   "status": "WON",
-  "correctCount": 5
+  "correctCount": 5,
+  "fragmentsEarned": 10
 }
 ```
 
@@ -691,6 +692,86 @@ Si el intento terminó, devuelve el resultado final en vez de una pregunta.
 **POST** `/boss-fights/:challengeSlug/retry`
 
 Solo si tienes un intento LOST y no derrotaste al boss.
+
+---
+
+## Fragments (Fragmentos)
+
+Sistema de moneda interna de la app. Se ganan fragmentos al derrotar bosses.
+
+### Ver balance de fragmentos
+
+**GET** `/fragments/balance`
+
+Devuelve el balance actual (suma de todas las transacciones) y el total ganado históricamente.
+
+**Response:**
+```json
+{
+  "balance": 10,
+  "totalEarned": 10
+}
+```
+
+---
+
+### Ver historial de transacciones
+
+**GET** `/fragments/transactions?limit=20&offset=0`
+
+Historial paginado, más recientes primero.
+
+**Response:**
+```json
+{
+  "transactions": [
+    {
+      "id": "uuid",
+      "amount": 10,
+      "reason": "BOSS_DEFEATED",
+      "relatedBossId": "uuid",
+      "description": null,
+      "createdAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+**Razones disponibles:**
+- `BOSS_DEFEATED` - Ganado al derrotar un boss
+- `REDEMPTION` - Gastado en canjes
+- `ADMIN_ADJUSTMENT` - Ajuste manual
+
+---
+
+### Gastar fragmentos
+
+**POST** `/fragments/spend`
+
+Crea una transacción negativa. Valida que haya balance suficiente.
+
+```json
+{
+  "amount": 5,
+  "description": "Canje por membresía premium"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid",
+  "userId": "uuid",
+  "amount": -5,
+  "reason": "REDEMPTION",
+  "description": "Canje por membresía premium",
+  "createdAt": "2024-01-15T10:00:00.000Z"
+}
+```
+
+**Errores:**
+- `400 Bad Request` - Balance insuficiente
 
 ---
 
@@ -859,6 +940,29 @@ curl -X POST http://localhost:3000/boss-fights/attempts/<ATTEMPT_ID>/answer \
   -H "Authorization: Bearer <TU_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"selectedOptionIndex": 1}'
+```
+
+### Ver balance de fragmentos
+
+```bash
+curl -X GET http://localhost:3000/fragments/balance \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Ver historial de transacciones
+
+```bash
+curl -X GET "http://localhost:3000/fragments/transactions?limit=20&offset=0" \
+  -H "Authorization: Bearer <TU_TOKEN>"
+```
+
+### Gastar fragmentos
+
+```bash
+curl -X POST http://localhost:3000/fragments/spend \
+  -H "Authorization: Bearer <TU_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 5, "description": "Canje por membresía"}'
 ```
 
 ## Desarrollo

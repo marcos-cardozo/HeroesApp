@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Boss } from './entities/boss.entity';
 import { BossQuestion } from './entities/boss-question.entity';
 import { UserBossAttempt, AttemptStatus } from './entities/user-boss-attempt.entity';
@@ -13,6 +13,7 @@ import { UserBossAnswer } from './entities/user-boss-answer.entity';
 import { UserBossDefeat } from './entities/user-boss-defeat.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengesService } from '../challenges/challenges.service';
+import { FragmentsService } from '../fragments/fragments.service';
 
 export interface BossWithStatus {
   id: string;
@@ -89,6 +90,7 @@ export interface AnswerResponse {
   totalQuestions: number;
   status?: AttemptStatus;
   correctCount?: number;
+  fragmentsEarned?: number;
 }
 
 @Injectable()
@@ -107,6 +109,8 @@ export class BossFightService {
     @InjectRepository(Challenge)
     private challengeRepository: Repository<Challenge>,
     private challengesService: ChallengesService,
+    private fragmentsService: FragmentsService,
+    private dataSource: DataSource,
   ) {}
 
   async findAllForUser(userId: string): Promise<BossListResponse> {
@@ -355,14 +359,34 @@ export class BossFightService {
       attempt.currentQuestionIndex += 1;
 
       if (attempt.currentQuestionIndex >= sortedQuestions.length) {
-        attempt.status = AttemptStatus.WON;
-        attempt.finishedAt = new Date();
-        await this.attemptRepository.save(attempt);
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
 
-        await this.defeatRepository.save({
-          userId,
-          bossId: attempt.bossId,
-        });
+        try {
+          attempt.status = AttemptStatus.WON;
+          attempt.finishedAt = new Date();
+          await queryRunner.manager.save(attempt);
+
+          await queryRunner.manager.save(UserBossDefeat, {
+            userId,
+            bossId: attempt.bossId,
+          });
+
+          await this.fragmentsService.awardFragmentsTransactional(
+            queryRunner,
+            userId,
+            attempt.bossId,
+            attempt.boss.rewardFragments,
+          );
+
+          await queryRunner.commitTransaction();
+        } catch (error) {
+          await queryRunner.rollbackTransaction();
+          throw error;
+        } finally {
+          await queryRunner.release();
+        }
 
         const correctCount = await this.answerRepository.count({
           where: { attemptId, wasCorrect: true },
@@ -376,6 +400,7 @@ export class BossFightService {
           maxFails: attempt.boss.maxFails,
           totalQuestions: attempt.boss.totalQuestions,
           correctCount,
+          fragmentsEarned: attempt.boss.rewardFragments,
         };
       }
 

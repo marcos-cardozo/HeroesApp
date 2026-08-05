@@ -31,6 +31,9 @@ export class Boss {
   @Column({ name: 'max_fails', default: 3 })
   maxFails: number;
 
+  @Column({ name: 'reward_fragments', default: 10 })
+  rewardFragments: number;
+
   @Column({ default: 0 })
   order: number;
 
