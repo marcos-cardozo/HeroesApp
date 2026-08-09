@@ -78,25 +78,48 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-black">
-      <div className="w-full max-w-md space-y-8">
+    <div className="quest-bg min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="quest-rise w-full max-w-md">
         {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-amber-500 mb-2">⚔️ Heroes App</h1>
-          <h2 className="text-2xl font-semibold text-white">Crear cuenta</h2>
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-4 h-14 w-14">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M24 4L41 10V22C41 32.5 34 39.5 24 44C14 39.5 7 32.5 7 22V10L24 4Z"
+                stroke="var(--gold)"
+                strokeWidth="1.5"
+                fill="rgba(201,164,75,0.08)"
+              />
+              <path d="M24 14L27.5 21.5L35 22.5L29.5 27.5L31 35L24 31L17 35L18.5 27.5L13 22.5L20.5 21.5L24 14Z" fill="var(--gold)" />
+            </svg>
+          </div>
+          <p className="font-display text-xs tracking-[0.35em] text-[var(--gold)] uppercase mb-2">
+            Heroes App
+          </p>
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-[var(--parchment)]">
+            Forjá tu héroe
+          </h1>
+          <p className="mt-2 text-sm text-[var(--parchment-muted)]">
+            Creá tu cuenta y empezá tu primera misión
+          </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+        <form onSubmit={handleSubmit} className="quest-panel p-8 sm:p-9 space-y-6">
+          <span className="bracket-tl" aria-hidden="true" />
+          <span className="bracket-tr" aria-hidden="true" />
+          <span className="bracket-bl" aria-hidden="true" />
+          <span className="bracket-br" aria-hidden="true" />
+
           {apiError && (
-            <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm">
+            <div className="rounded-sm px-4 py-3 text-sm border" style={{ background: 'var(--blood-soft)', borderColor: 'var(--blood)', color: '#f0c9c6' }}>
               {apiError}
             </div>
           )}
 
           {/* Nombre */}
           <div>
-            <label htmlFor="nombre" className="block text-sm font-medium text-zinc-300 mb-2">
+            <label htmlFor="nombre" className="block text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-2">
               Nombre
             </label>
             <input
@@ -104,18 +127,18 @@ export default function RegisterPage() {
               type="text"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className={`w-full px-4 py-3 bg-zinc-800 border ${errors.nombre ? 'border-red-500' : 'border-zinc-700'} rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors`}
+              className={`quest-input w-full px-4 py-3 rounded-sm ${errors.nombre ? 'field-error' : ''}`}
               placeholder="Tu nombre"
               disabled={isLoading}
             />
             {errors.nombre && (
-              <p className="mt-1 text-sm text-red-400">{errors.nombre}</p>
+              <p className="mt-1.5 text-sm" style={{ color: '#e08b85' }}>{errors.nombre}</p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
+            <label htmlFor="email" className="block text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-2">
               Email
             </label>
             <input
@@ -123,18 +146,18 @@ export default function RegisterPage() {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={`w-full px-4 py-3 bg-zinc-800 border ${errors.email ? 'border-red-500' : 'border-zinc-700'} rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors`}
+              className={`quest-input w-full px-4 py-3 rounded-sm ${errors.email ? 'field-error' : ''}`}
               placeholder="tu@email.com"
               disabled={isLoading}
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+              <p className="mt-1.5 text-sm" style={{ color: '#e08b85' }}>{errors.email}</p>
             )}
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
+            <label htmlFor="password" className="block text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-2">
               Contraseña
             </label>
             <input
@@ -142,12 +165,12 @@ export default function RegisterPage() {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className={`w-full px-4 py-3 bg-zinc-800 border ${errors.password ? 'border-red-500' : 'border-zinc-700'} rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors`}
+              className={`quest-input w-full px-4 py-3 rounded-sm ${errors.password ? 'field-error' : ''}`}
               placeholder="••••••••"
               disabled={isLoading}
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+              <p className="mt-1.5 text-sm" style={{ color: '#e08b85' }}>{errors.password}</p>
             )}
           </div>
 
@@ -155,7 +178,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 disabled:bg-amber-800 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="quest-btn w-full py-3 px-4 rounded-sm font-semibold tracking-wide flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -172,9 +195,9 @@ export default function RegisterPage() {
         </form>
 
         {/* Link to login */}
-        <p className="text-center text-zinc-400">
+        <p className="text-center text-[var(--parchment-muted)] mt-6 text-sm">
           ¿Ya tenés cuenta?{' '}
-          <Link href="/login" className="text-amber-500 hover:text-amber-400 font-medium transition-colors">
+          <Link href="/login" className="text-[var(--gold)] hover:text-[var(--gold-bright)] font-medium transition-colors">
             Iniciá sesión
           </Link>
         </p>

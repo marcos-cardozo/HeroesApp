@@ -3,24 +3,143 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Heroes App — quest-panel palette */
+  --void: #0b0a10;
+  --void-deep: #050408;
+  --panel: #17130f;
+  --panel-edge: #221b12;
+  --gold: #c9a24b;
+  --gold-bright: #e9c877;
+  --gold-dim: rgba(201, 164, 75, 0.35);
+  --blood: #b5453f;
+  --blood-soft: rgba(181, 69, 63, 0.16);
+  --parchment: #ece1cc;
+  --parchment-muted: #9c9280;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-cinzel);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---- Heroes App auth screens ---- */
+
+.quest-bg {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201, 164, 75, 0.08), transparent 70%),
+    radial-gradient(circle, rgba(236, 225, 204, 0.05) 1px, transparent 1px) 0 0/22px 22px,
+    var(--void);
+}
+
+.quest-panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(201, 164, 75, 0.05), transparent 30%),
+    var(--panel);
+  border: 1px solid var(--panel-edge);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 20px 60px -20px rgba(0, 0, 0, 0.8),
+    0 0 50px -25px rgba(201, 164, 75, 0.25);
+}
+
+.quest-panel > .bracket-tl,
+.quest-panel > .bracket-tr,
+.quest-panel > .bracket-bl,
+.quest-panel > .bracket-br {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.bracket-tl { top: -9px; left: -9px; border-right: none; border-bottom: none; }
+.bracket-tr { top: -9px; right: -9px; border-left: none; border-bottom: none; }
+.bracket-bl { bottom: -9px; left: -9px; border-right: none; border-top: none; }
+.bracket-br { bottom: -9px; right: -9px; border-left: none; border-top: none; }
+
+.quest-input {
+  background: rgba(5, 4, 8, 0.55);
+  border: 1px solid rgba(201, 164, 75, 0.22);
+  color: var(--parchment);
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.quest-input::placeholder {
+  color: var(--parchment-muted);
+}
+
+.quest-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(5, 4, 8, 0.75);
+  box-shadow: 0 0 0 3px rgba(201, 164, 75, 0.15);
+}
+
+.quest-input.field-error {
+  border-color: var(--blood);
+}
+
+.quest-input.field-error:focus {
+  box-shadow: 0 0 0 3px rgba(181, 69, 63, 0.18);
+}
+
+.quest-btn {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color: var(--void-deep);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 8px 24px -8px rgba(201, 164, 75, 0.55);
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+.quest-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 12px 28px -8px rgba(201, 164, 75, 0.7);
+}
+
+.quest-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.quest-btn:disabled {
+  filter: grayscale(0.4) brightness(0.7);
+  cursor: not-allowed;
+}
+
+.quest-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.quest-rise {
+  animation: quest-rise 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes quest-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-rise {
+    animation: none;
+  }
 }
