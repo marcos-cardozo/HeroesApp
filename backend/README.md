@@ -792,6 +792,212 @@ Esto crea:
 
 ---
 
+## Portal
+
+Contenido personal de cada usuario: mood board, creencias clave, slides y narrativa final. Todos los endpoints requieren autenticación JWT.
+
+### Obtener todo el portal (conveniencia)
+
+**GET** `/portal`
+
+Devuelve todo el contenido del portal en una sola request.
+
+```bash
+curl http://localhost:3000/portal -H "Authorization: Bearer <TOKEN>"
+```
+
+**Response:**
+```json
+{
+  "moodBoard": [...],
+  "beliefs": [...],
+  "slides": [...],
+  "narrative": { "id": "...", "text": "..." }
+}
+```
+
+---
+
+### Mood Board
+
+#### Listar imágenes
+
+**GET** `/portal/mood-board`
+
+```bash
+curl http://localhost:3000/portal/mood-board -H "Authorization: Bearer <TOKEN>"
+```
+
+#### Agregar imagen
+
+**POST** `/portal/mood-board`
+
+```json
+{
+  "imageUrl": "https://ejemplo.com/imagen.jpg",
+  "order": 0
+}
+```
+
+```bash
+curl -X POST http://localhost:3000/portal/mood-board \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"imageUrl": "https://ejemplo.com/imagen.jpg"}'
+```
+
+#### Editar orden
+
+**PATCH** `/portal/mood-board/:id`
+
+```json
+{ "order": 1 }
+```
+
+#### Eliminar imagen
+
+**DELETE** `/portal/mood-board/:id`
+
+---
+
+### Key Beliefs (Creencias clave)
+
+#### Listar creencias
+
+**GET** `/portal/beliefs`
+
+#### Crear creencia
+
+**POST** `/portal/beliefs`
+
+```json
+{
+  "text": "Creo en mí mismo",
+  "order": 0
+}
+```
+
+```bash
+curl -X POST http://localhost:3000/portal/beliefs \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Creo en mí mismo"}'
+```
+
+#### Editar creencia
+
+**PATCH** `/portal/beliefs/:id`
+
+```json
+{ "text": "Texto actualizado", "order": 1 }
+```
+
+#### Eliminar creencia
+
+**DELETE** `/portal/beliefs/:id`
+
+---
+
+### Slides
+
+#### Listar slides (con imágenes)
+
+**GET** `/portal/slides`
+
+```bash
+curl http://localhost:3000/portal/slides -H "Authorization: Bearer <TOKEN>"
+```
+
+#### Crear slide
+
+**POST** `/portal/slides`
+
+```json
+{
+  "title": "YO",
+  "narrativeText": "Este es el texto de mi slide...",
+  "order": 1
+}
+```
+
+```bash
+curl -X POST http://localhost:3000/portal/slides \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "YO", "narrativeText": "Este es mi slide..."}'
+```
+
+#### Editar slide
+
+**PATCH** `/portal/slides/:id`
+
+```json
+{ "title": "Nuevo título", "narrativeText": "Texto actualizado", "order": 2 }
+```
+
+#### Eliminar slide (cascada: elimina sus imágenes)
+
+**DELETE** `/portal/slides/:id`
+
+#### Agregar imagen a slide
+
+**POST** `/portal/slides/:slideId/images`
+
+Máximo 4 imágenes por slide. Valida con error 400 si ya tiene 4.
+
+```json
+{
+  "imageUrl": "https://ejemplo.com/imagen.jpg",
+  "order": 0
+}
+```
+
+```bash
+curl -X POST http://localhost:3000/portal/slides/SLIDE_ID/images \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"imageUrl": "https://ejemplo.com/imagen.jpg"}'
+```
+
+#### Eliminar imagen de slide
+
+**DELETE** `/portal/slides/:slideId/images/:imageId`
+
+---
+
+### Narrative Final
+
+#### Obtener narrativa
+
+**GET** `/portal/narrative`
+
+Devuelve `{ "text": "" }` si no existe.
+
+```bash
+curl http://localhost:3000/portal/narrative -H "Authorization: Bearer <TOKEN>"
+```
+
+#### Crear o actualizar (upsert)
+
+**PUT** `/portal/narrative`
+
+Crea si no existe, actualiza si ya existe.
+
+```json
+{
+  "text": "Este es mi guión final del portal..."
+}
+```
+
+```bash
+curl -X PUT http://localhost:3000/portal/narrative \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Este es mi guión final..."}'
+```
+
+---
+
 ## Pruebas con curl
 
 ### Registrar un usuario
