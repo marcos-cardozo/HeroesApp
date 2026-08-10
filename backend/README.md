@@ -971,7 +971,7 @@ curl -X POST http://localhost:3000/portal/slides/SLIDE_ID/images \
 
 **GET** `/portal/narrative`
 
-Devuelve `{ "text": "" }` si no existe.
+Devuelve `null` si el usuario todavía no tiene una narrativa.
 
 ```bash
 curl http://localhost:3000/portal/narrative -H "Authorization: Bearer <TOKEN>"
