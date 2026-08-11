@@ -1,11 +1,72 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthGuard } from '@/components/AuthGuard';
 import { AppHeader } from '@/components/AppHeader';
+import { LinkModal } from '@/components/LinkModal';
+import { portalApi } from '@/lib/api';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
-import { PortalOverview, User } from '@/lib/types';
+import { MoodBoardImage, PortalOverview, User } from '@/lib/types';
+
+function MoodBoardSection({
+  images,
+  onAdd,
+}: {
+  images: MoodBoardImage[];
+  onAdd: (url: string) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <section className="mb-20">
+      <div className="flex items-baseline justify-between mb-6">
+        <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--ink)' }}>
+          Mood Board
+        </h2>
+        <span className="mono-label">Slide 01</span>
+      </div>
+      <div className="divider mb-8" />
+
+      {images.length === 0 ? (
+        <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
+          Sin imágenes en el mood board todavía.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {images.map((img) => (
+            <div key={img.id} className="panel overflow-hidden aspect-square">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img.imageUrl}
+                alt="Mood board"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen(true)}
+        className="btn-ghost text-sm px-4 py-2 rounded-sm mt-8"
+      >
+        + Agregar link
+      </button>
+
+      <LinkModal
+        open={open}
+        triggerRef={triggerRef}
+        onClose={() => setOpen(false)}
+        onSubmit={onAdd}
+      />
+    </section>
+  );
+}
 
 function PortalContent() {
   const router = useRouter();
@@ -13,6 +74,22 @@ function PortalContent() {
   const [overview, setOverview] = useState<PortalOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const moodBoard = overview?.moodBoard ?? [];
+
+  const addMoodBoardLink = useCallback(
+    async (imageUrl: string) => {
+      const nextOrder = overview?.moodBoard.length ?? 0;
+      const created = await portalApi.createMoodBoardImage({
+        imageUrl,
+        order: nextOrder,
+      });
+      setOverview((prev) =>
+        prev ? { ...prev, moodBoard: [...prev.moodBoard, created] } : prev,
+      );
+    },
+    [overview?.moodBoard.length],
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -74,7 +151,6 @@ function PortalContent() {
   }
 
   const slides = overview?.slides ?? [];
-  const moodBoard = overview?.moodBoard ?? [];
   const beliefs = overview?.beliefs ?? [];
   const narrative = overview?.narrative ?? null;
 
@@ -82,7 +158,7 @@ function PortalContent() {
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--void)' }}>
       <AppHeader userName={user?.nombre} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <main className="relative flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Encabezado */}
         <p className="mono-label mb-4">— Portal</p>
         <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4" style={{ color: 'var(--ink)' }}>
@@ -99,38 +175,7 @@ function PortalContent() {
         {/* ===========================================================
             SECCIÓN 01 — MOOD BOARD
            =========================================================== */}
-        <section className="mb-20">
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--ink)' }}>
-              Mood Board
-            </h2>
-            <span className="mono-label">Slide 01</span>
-          </div>
-          <div className="divider mb-8" />
-
-          {moodBoard.length === 0 ? (
-            <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
-              Sin imágenes en el mood board todavía.
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {moodBoard.map((img) => (
-                <div
-                  key={img.id}
-                  className="panel overflow-hidden aspect-square"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img.imageUrl}
-                    alt="Mood board"
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        <MoodBoardSection images={moodBoard} onAdd={addMoodBoardLink} />
 
         {/* ===========================================================
             SECCIÓN 02 — CREENCIAS

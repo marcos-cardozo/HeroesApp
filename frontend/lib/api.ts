@@ -74,4 +74,29 @@ export const removeAuthToken = () => {
   }
 };
 
+// ------------------------------- Portal API -------------------------------
+// Thin persistence layer for the Portal module. Uses the shared axios
+// instance (auth token + 401 handling wired via interceptors above).
+
+export interface MoodBoardImageDto {
+  imageUrl: string;
+  order: number;
+}
+
+export const portalApi = {
+  getOverview: async () => {
+    const response = await api.get('/portal');
+    return response.data;
+  },
+
+  createMoodBoardImage: async (dto: MoodBoardImageDto) => {
+    const response = await api.post('/portal/mood-board', dto);
+    return response.data;
+  },
+
+  deleteMoodBoardImage: async (id: string) => {
+    await api.delete(`/portal/mood-board/${id}`);
+  },
+};
+
 export default api;

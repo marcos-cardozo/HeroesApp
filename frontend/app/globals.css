@@ -261,4 +261,131 @@ body {
   .btn-primary:hover:not(:disabled) {
     transform: none;
   }
+  .link-modal-panel {
+    animation: none;
+  }
 }
+
+/* ---- Quest panel (modal) + brackets ---- */
+/* Usado por el LinkModal del portal. Conserva el lenguaje visual del panel
+   pero con esquinas marcadas y foco de acento. */
+
+.quest-panel {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+}
+
+.quest-panel > .bracket-tl,
+.quest-panel > .bracket-tr,
+.quest-panel > .bracket-bl,
+.quest-panel > .bracket-br {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--accent);
+  pointer-events: none;
+}
+.quest-panel > .bracket-tl { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+.quest-panel > .bracket-tr { top: -1px; right: -1px; border-top: 2px solid; border-right: 2px solid; }
+.quest-panel > .bracket-bl { bottom: -1px; left: -1px; border-bottom: 2px solid; border-left: 2px solid; }
+.quest-panel > .bracket-br { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+
+.quest-input {
+  background: var(--void);
+  border: 1px solid var(--panel-edge);
+  color: var(--ink);
+  border-radius: 4px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.quest-input::placeholder { color: var(--ink-muted); }
+.quest-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.quest-input.field-error { border-color: var(--danger); }
+.quest-input.field-error:focus { box-shadow: 0 0 0 3px var(--danger-soft); }
+
+.quest-btn {
+  background: var(--accent);
+  color: #0A0A0B;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.quest-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.quest-btn:active:not(:disabled) { transform: translateY(0); }
+.quest-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.quest-modal-close {
+  width: 28px;
+  height: 28px;
+  line-height: 1;
+  border-radius: 4px;
+  color: var(--ink-muted);
+  background: transparent;
+  font-size: 1.25rem;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+.quest-modal-close:hover { color: var(--ink); background: rgba(255,255,255,0.04); }
+
+/* ---- Portal glow (acento sutil del sector central) ---- */
+.portal-glow {
+  box-shadow: 0 0 0 1px transparent;
+}
+
+/* ---- LinkModal: overlay con scope al contenedor central ----
+   El overlay es position: absolute; inset: 0 dentro de un contenedor
+   con position: relative (el <main> del portal). Por eso el blur/dimmer
+   afecta SOLO esa zona, no al AppHeader ni al resto de la página. */
+
+.link-modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1rem, 6vw, 4rem) 1rem 2rem;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: link-modal-fade 180ms ease both;
+}
+
+@keyframes link-modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.link-modal-panel {
+  width: 100%;
+  max-width: 28rem;
+  margin-top: 8vh;
+  padding: 1.75rem 1.75rem 1.5rem;
+  animation: link-modal-pop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes link-modal-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-modal-overlay,
+  .link-modal-panel { animation: none; }
+}
+
+/* En viewports estrechos evitamos que el panel se pegue a los bordes y
+   permitimos scroll dentro del overlay si hace falta. */
+@media (max-width: 640px) {
+  .link-modal-overlay {
+    align-items: flex-start;
+    padding: 1rem 0.75rem 2rem;
+    overflow-y: auto;
+  }
+  .link-modal-panel { margin-top: 4vh; }
+}
+
