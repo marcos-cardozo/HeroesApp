@@ -7,7 +7,13 @@ import { AppHeader } from '@/components/AppHeader';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
 import { User } from '@/lib/types';
 
-function DashboardContent() {
+interface ComingSoonPageProps {
+  eyebrow: string;
+  title: string;
+  description: string;
+}
+
+function ComingSoonContent({ eyebrow, title, description }: ComingSoonPageProps) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,47 +68,37 @@ function DashboardContent() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--void)' }}>
       <AppHeader userName={user?.nombre} />
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12">
-        <p className="mono-label mb-3">— Dashboard</p>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold mb-3" style={{ color: 'var(--ink)' }}>
-          ¡Bienvenido{user?.nombre ? `, ${user.nombre}` : ''}!
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <p className="mono-label mb-4">{eyebrow}</p>
+        <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4" style={{ color: 'var(--ink)' }}>
+          {title}
         </h1>
-        <p className="text-sm mb-10" style={{ color: 'var(--ink-muted)' }}>
-          Estás autenticado correctamente en Heroes App.
+        <p className="text-base max-w-xl mb-10" style={{ color: 'var(--ink-muted)' }}>
+          {description}
         </p>
-
         <div className="divider mb-8" />
-
-        {user && (
-          <div className="panel p-6 max-w-md">
-            <p className="mono-label mb-4">Perfil</p>
-            <div className="space-y-3">
-              <div className="flex justify-between items-baseline gap-4">
-                <span className="text-sm" style={{ color: 'var(--ink-muted)' }}>ID</span>
-                <span className="font-mono text-xs" style={{ color: 'var(--ink)' }}>{user.id}</span>
-              </div>
-              <div className="divider" />
-              <div className="flex justify-between items-baseline gap-4">
-                <span className="text-sm" style={{ color: 'var(--ink-muted)' }}>Email</span>
-                <span className="text-sm" style={{ color: 'var(--ink)' }}>{user.email}</span>
-              </div>
-              <div className="divider" />
-              <div className="flex justify-between items-baseline gap-4">
-                <span className="text-sm" style={{ color: 'var(--ink-muted)' }}>Nombre</span>
-                <span className="text-sm" style={{ color: 'var(--ink)' }}>{user.nombre}</span>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="panel p-8 sm:p-10 max-w-xl">
+          <span
+            className="inline-block h-1.5 w-1.5 rounded-full mb-4"
+            style={{ background: 'var(--accent)' }}
+            aria-hidden="true"
+          />
+          <p className="font-display text-xl font-medium mb-2" style={{ color: 'var(--ink)' }}>
+            Próximamente
+          </p>
+          <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
+            Esta sección está en desarrollo. Volvé pronto.
+          </p>
+        </div>
       </main>
     </div>
   );
 }
 
-export default function DashboardPage() {
+export function ComingSoonPage({ eyebrow, title, description }: ComingSoonPageProps) {
   return (
     <AuthGuard>
-      <DashboardContent />
+      <ComingSoonContent eyebrow={eyebrow} title={title} description={description} />
     </AuthGuard>
   );
 }

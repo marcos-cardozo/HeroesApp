@@ -78,48 +78,34 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="quest-bg min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="quest-rise w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: 'var(--void)' }}>
+      <div className="rise w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mx-auto mb-4 h-14 w-14">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M24 4L41 10V22C41 32.5 34 39.5 24 44C14 39.5 7 32.5 7 22V10L24 4Z"
-                stroke="var(--gold)"
-                strokeWidth="1.5"
-                fill="rgba(201,164,75,0.08)"
-              />
-              <path d="M24 14L27.5 21.5L35 22.5L29.5 27.5L31 35L24 31L17 35L18.5 27.5L13 22.5L20.5 21.5L24 14Z" fill="var(--gold)" />
+        <div className="text-center mb-10">
+          <div className="mx-auto mb-5 h-12 w-12 flex items-center justify-center">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+              <rect x="4" y="4" width="40" height="40" rx="4" stroke="var(--accent)" strokeWidth="1.5" fill="var(--accent-soft)" />
+              <path d="M24 14L30 24L24 34L18 24L24 14Z" fill="var(--accent)" />
             </svg>
           </div>
-          <p className="font-display text-xs tracking-[0.35em] text-[var(--gold)] uppercase mb-2">
-            Heroes App
-          </p>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-[var(--parchment)]">
-            Forjá tu héroe
+          <p className="mono-label mb-3">— Heroes App</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: 'var(--ink)' }}>
+            Creá tu cuenta
           </h1>
-          <p className="mt-2 text-sm text-[var(--parchment-muted)]">
-            Creá tu cuenta y empezá tu primera misión
+          <p className="mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
+            Empezá a construir tus hábitos
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="quest-panel p-8 sm:p-9 space-y-6">
-          <span className="bracket-tl" aria-hidden="true" />
-          <span className="bracket-tr" aria-hidden="true" />
-          <span className="bracket-bl" aria-hidden="true" />
-          <span className="bracket-br" aria-hidden="true" />
-
+        <form onSubmit={handleSubmit} className="panel p-7 sm:p-8 space-y-5">
           {apiError && (
-            <div className="rounded-sm px-4 py-3 text-sm border" style={{ background: 'var(--blood-soft)', borderColor: 'var(--blood)', color: '#f0c9c6' }}>
-              {apiError}
-            </div>
+            <div className="alert-error px-4 py-3 text-sm">{apiError}</div>
           )}
 
           {/* Nombre */}
           <div>
-            <label htmlFor="nombre" className="block text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-2">
+            <label htmlFor="nombre" className="mono-label block mb-2">
               Nombre
             </label>
             <input
@@ -127,18 +113,18 @@ export default function RegisterPage() {
               type="text"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className={`quest-input w-full px-4 py-3 rounded-sm ${errors.nombre ? 'field-error' : ''}`}
+              className={`input-field w-full px-4 py-3 ${errors.nombre ? 'field-error' : ''}`}
               placeholder="Tu nombre"
               disabled={isLoading}
             />
             {errors.nombre && (
-              <p className="mt-1.5 text-sm" style={{ color: '#e08b85' }}>{errors.nombre}</p>
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>{errors.nombre}</p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-2">
+            <label htmlFor="email" className="mono-label block mb-2">
               Email
             </label>
             <input
@@ -146,18 +132,18 @@ export default function RegisterPage() {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={`quest-input w-full px-4 py-3 rounded-sm ${errors.email ? 'field-error' : ''}`}
+              className={`input-field w-full px-4 py-3 ${errors.email ? 'field-error' : ''}`}
               placeholder="tu@email.com"
               disabled={isLoading}
             />
             {errors.email && (
-              <p className="mt-1.5 text-sm" style={{ color: '#e08b85' }}>{errors.email}</p>
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>{errors.email}</p>
             )}
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-2">
+            <label htmlFor="password" className="mono-label block mb-2">
               Contraseña
             </label>
             <input
@@ -165,12 +151,12 @@ export default function RegisterPage() {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className={`quest-input w-full px-4 py-3 rounded-sm ${errors.password ? 'field-error' : ''}`}
+              className={`input-field w-full px-4 py-3 ${errors.password ? 'field-error' : ''}`}
               placeholder="••••••••"
               disabled={isLoading}
             />
             {errors.password && (
-              <p className="mt-1.5 text-sm" style={{ color: '#e08b85' }}>{errors.password}</p>
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>{errors.password}</p>
             )}
           </div>
 
@@ -178,11 +164,11 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="quest-btn w-full py-3 px-4 rounded-sm font-semibold tracking-wide flex items-center justify-center gap-2"
+            className="btn-primary w-full py-3 px-4 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <svg className="spinner h-5 w-5" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -195,9 +181,9 @@ export default function RegisterPage() {
         </form>
 
         {/* Link to login */}
-        <p className="text-center text-[var(--parchment-muted)] mt-6 text-sm">
+        <p className="text-center mt-6 text-sm" style={{ color: 'var(--ink-muted)' }}>
           ¿Ya tenés cuenta?{' '}
-          <Link href="/login" className="text-[var(--gold)] hover:text-[var(--gold-bright)] font-medium transition-colors">
+          <Link href="/login" className="accent-link font-medium">
             Iniciá sesión
           </Link>
         </p>

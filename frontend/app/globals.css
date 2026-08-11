@@ -1,136 +1,199 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* =========================================================================
+   HEROES APP — Design System
+   Minimalista · Editorial · Oscuro · Tech/Premium Agency
+   ========================================================================= */
 
-  /* Heroes App — quest-panel palette */
-  --void: #0b0a10;
-  --void-deep: #050408;
-  --panel: #17130f;
-  --panel-edge: #221b12;
-  --gold: #c9a24b;
-  --gold-bright: #e9c877;
-  --gold-dim: rgba(201, 164, 75, 0.35);
-  --blood: #b5453f;
-  --blood-soft: rgba(181, 69, 63, 0.16);
-  --parchment: #ece1cc;
-  --parchment-muted: #9c9280;
+:root {
+  /* Paleta */
+  --void: #0A0A0B;
+  --panel: #131315;
+  --panel-edge: #232326;
+  --ink: #F2F0EB;
+  --ink-muted: #8A8A8F;
+  --accent: #7C6CFF;
+  --accent-soft: rgba(124, 108, 255, 0.12);
+
+  /* Estados de error (sin herencia dorada) */
+  --danger: #E5536B;
+  --danger-soft: rgba(229, 83, 107, 0.12);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--void);
+  --color-foreground: var(--ink);
   --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-cinzel);
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* ---- Heroes App auth screens ---- */
-
-.quest-bg {
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201, 164, 75, 0.08), transparent 70%),
-    radial-gradient(circle, rgba(236, 225, 204, 0.05) 1px, transparent 1px) 0 0/22px 22px,
-    var(--void);
+/* Selección de texto coherente con el acento */
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
-.quest-panel {
-  position: relative;
-  background:
-    linear-gradient(180deg, rgba(201, 164, 75, 0.05), transparent 30%),
-    var(--panel);
+/* Scrollbar discreto */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--panel-edge) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--panel-edge);
+  border-radius: 4px;
+}
+
+/* ---- Utilidades tipográficas ---- */
+
+.font-display {
+  font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+}
+
+.mono-label {
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.6875rem; /* 11px */
+  color: var(--ink-muted);
+}
+
+/* ---- Superficie / paneles ---- */
+
+.panel {
+  background: var(--panel);
   border: 1px solid var(--panel-edge);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 20px 60px -20px rgba(0, 0, 0, 0.8),
-    0 0 50px -25px rgba(201, 164, 75, 0.25);
+  border-radius: 4px;
 }
 
-.quest-panel > .bracket-tl,
-.quest-panel > .bracket-tr,
-.quest-panel > .bracket-bl,
-.quest-panel > .bracket-br {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--gold);
-  opacity: 0.85;
-  pointer-events: none;
+/* ---- Inputs ---- */
+
+.input-field {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  color: var(--ink);
+  border-radius: 4px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.bracket-tl { top: -9px; left: -9px; border-right: none; border-bottom: none; }
-.bracket-tr { top: -9px; right: -9px; border-left: none; border-bottom: none; }
-.bracket-bl { bottom: -9px; left: -9px; border-right: none; border-top: none; }
-.bracket-br { bottom: -9px; right: -9px; border-left: none; border-top: none; }
-
-.quest-input {
-  background: rgba(5, 4, 8, 0.55);
-  border: 1px solid rgba(201, 164, 75, 0.22);
-  color: var(--parchment);
-  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+.input-field::placeholder {
+  color: var(--ink-muted);
 }
 
-.quest-input::placeholder {
-  color: var(--parchment-muted);
-}
-
-.quest-input:focus {
+.input-field:focus {
   outline: none;
-  border-color: var(--gold);
-  background: rgba(5, 4, 8, 0.75);
-  box-shadow: 0 0 0 3px rgba(201, 164, 75, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-.quest-input.field-error {
-  border-color: var(--blood);
+.input-field.field-error {
+  border-color: var(--danger);
 }
 
-.quest-input.field-error:focus {
-  box-shadow: 0 0 0 3px rgba(181, 69, 63, 0.18);
+.input-field.field-error:focus {
+  box-shadow: 0 0 0 3px var(--danger-soft);
 }
 
-.quest-btn {
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-  color: var(--void-deep);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 8px 24px -8px rgba(201, 164, 75, 0.55);
-  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+/* ---- Botones ---- */
+
+.btn-primary {
+  background: var(--accent);
+  color: #0A0A0B;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 
-.quest-btn:hover:not(:disabled) {
-  filter: brightness(1.08);
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.88;
   transform: translateY(-1px);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 12px 28px -8px rgba(201, 164, 75, 0.7);
 }
 
-.quest-btn:active:not(:disabled) {
+.btn-primary:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.quest-btn:disabled {
-  filter: grayscale(0.4) brightness(0.7);
+.btn-primary:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
 }
 
-.quest-divider {
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-muted);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--ink-muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ---- Divisores ---- */
+
+.divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  width: 100%;
+  background: var(--panel-edge);
 }
 
-.quest-rise {
-  animation: quest-rise 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+/* ---- Links de acento ---- */
+
+.accent-link {
+  color: var(--accent);
+  transition: opacity 150ms ease;
+}
+.accent-link:hover {
+  opacity: 0.78;
 }
 
-@keyframes quest-rise {
+/* ---- Estado de error (alerta) ---- */
+
+.alert-error {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
+  color: #F4B9C1;
+  border-radius: 4px;
+}
+
+/* ---- Spinner ---- */
+
+.spinner {
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- Entrada sutil ---- */
+
+.rise {
+  animation: rise 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -138,8 +201,64 @@ body {
   }
 }
 
+/* ---- Focus visible global (accesibilidad) ---- */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- Elemento de firma: halo del PORTAL ----
+   Único efecto especial de toda la app. Resplandor difuso
+   y de baja opacidad detrás del panel narrativo final.
+   .portal-halo crea un stacking context; el ::before pinta
+   el halo y el panel (hijo) se apoya encima con position/z-index. */
+
+.portal-halo {
+  position: relative;
+  isolation: isolate;
+}
+
+.portal-halo::before {
+  content: "";
+  position: absolute;
+  inset: -25% -10%;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(124, 108, 255, 0.18),
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: halo-pulse 6s ease-in-out infinite;
+}
+
+.portal-halo > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes halo-pulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---- Accesibilidad: movimiento reducido ---- */
+
 @media (prefers-reduced-motion: reduce) {
-  .quest-rise {
+  .rise {
     animation: none;
+  }
+  .portal-halo::before {
+    animation: none;
+    opacity: 0.9;
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: none;
   }
 }
