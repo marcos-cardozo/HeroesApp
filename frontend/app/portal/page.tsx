@@ -53,7 +53,7 @@ function MoodBoardSection({
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
-        className="btn-ghost text-sm px-4 py-2 rounded-sm mt-8"
+        className="btn-portal mt-8"
       >
         + Agregar link
       </button>

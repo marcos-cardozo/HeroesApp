@@ -23,6 +23,12 @@ resto de la página permanecen nítidos.
   con `rgba(0,0,0,0.6)` + `backdrop-filter: blur(6px)`, animación de
   apertura fade/scale de bajo impacto, reglas de movimiento reducido y
   ajustes para viewport estrecho.
+- `frontend/app/globals.css` (+): botones neobrutalist del portal
+  (`.btn-portal` primario y `.btn-portal-ghost` secundario), estilo
+  `.button-74` (píldora + sombra sólida desplazada + presión con
+  translate) pero con la paleta oscura de la página (`--accent`,
+  `--ink`, `--panel-edge`). Usados en "+ Agregar link", "Cancelar" y
+  "Agregar" del LinkModal.
 - `frontend/lib/api.ts`: `portalApi` (getOverview / createMoodBoardImage
   / deleteMoodBoardImage) sobre el cliente axios compartido.
 
@@ -83,6 +89,10 @@ Iniciá sesión y abrí `/portal`. En la sección **Mood Board** tocá
 - `before_modal.png` — página del portal con el modal cerrado.
 - `after_modal_open.png` — modal abierto: el sector central queda
   difuminado/oscurecido mientras el `AppHeader` permanece nítido.
+- `btn_portal_closed.png` — botón "+ Agregar link" con estilo
+  neobrutalist (píldora + sombra sólida) en paleta oscura.
+- `btn_portal_modal.png` — botones "Cancelar" (fantasma) y "Agregar"
+  (primario) dentro del LinkModal, mismo lenguaje visual.
 
 Tomá tus propias capturas con DevTools (`Cmd/Ctrl+Shift+P` →
 "Capture full size screenshot") o con la herramienta de captura del SO.
