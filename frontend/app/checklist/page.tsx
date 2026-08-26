@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 
 import { AuthGuard } from '@/components/AuthGuard';
@@ -30,5 +31,16 @@ export default function ChecklistPage() {
     <AuthGuard>
       <ChecklistContent />
     </AuthGuard>
+=======
+import { ComingSoonPage } from '@/components/ComingSoonPage';
+
+export default function ChecklistPage() {
+  return (
+    <ComingSoonPage
+      eyebrow="— Módulo 04"
+      title="Checklist"
+      description="Listas mínimas y efectivas. Tachá lo hecho, avanzá sin ruido."
+    />
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
   );
 }

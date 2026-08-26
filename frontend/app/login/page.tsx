@@ -84,20 +84,29 @@ export default function LoginPage() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="quest-bg min-h-screen flex items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
       <div className="quest-rise w-full max-w-sm sm:max-w-md">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="mx-auto mb-3 sm:mb-4 h-12 w-12 sm:h-14 sm:w-14">
+=======
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: 'var(--void)' }}>
+      <div className="rise w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="mx-auto mb-5 h-12 w-12">
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             <Image
               src="/logo.png"
               alt="Heroes App"
-              width={56}
-              height={56}
-              className="h-full w-full"
+              width={48}
+              height={48}
+              className="h-full w-full object-contain"
               priority
             />
           </div>
+<<<<<<< HEAD
           <p className="font-mono text-[10px] sm:text-xs tracking-[0.35em] text-(--gold) uppercase mb-1 sm:mb-2">
             Heroes App
           </p>
@@ -106,10 +115,19 @@ export default function LoginPage() {
           </h1>
           <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-(--parchment-muted)">
             Iniciá sesión para continuar tu misión
+=======
+          <p className="mono-label mb-3">— Heroes App</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: 'var(--ink)' }}>
+            Bienvenido de vuelta
+          </h1>
+          <p className="mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
+            Iniciá sesión para continuar
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
           </p>
         </div>
 
         {/* Form */}
+<<<<<<< HEAD
         <form
           onSubmit={handleSubmit}
           className="quest-panel p-5 sm:p-7 md:p-9 space-y-5 sm:space-y-6 rounded-2xl!"
@@ -130,13 +148,22 @@ export default function LoginPage() {
             >
               {apiError}
             </div>
+=======
+        <form onSubmit={handleSubmit} className="panel p-7 sm:p-8 space-y-5">
+          {apiError && (
+            <div className="alert-error px-4 py-3 text-sm">{apiError}</div>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
           )}
 
           {/* Email */}
           <div>
             <label
               htmlFor="email"
+<<<<<<< HEAD
               className="block text-[10px] sm:text-xs font-medium tracking-wider uppercase text-(--parchment-muted) mb-1.5 sm:mb-2"
+=======
+              className="mono-label block mb-2"
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             >
               Email
             </label>
@@ -147,15 +174,23 @@ export default function LoginPage() {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
+<<<<<<< HEAD
               className={`quest-input w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl! text-sm sm:text-base ${errors.email ? "field-error" : ""}`}
+=======
+              className={`input-field w-full px-4 py-3 ${errors.email ? "field-error" : ""}`}
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               placeholder="tu@email.com"
               disabled={isLoading}
             />
             {errors.email && (
+<<<<<<< HEAD
               <p
                 className="mt-1.5 text-xs sm:text-sm"
                 style={{ color: "#e08b85" }}
               >
+=======
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
                 {errors.email}
               </p>
             )}
@@ -165,7 +200,11 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
+<<<<<<< HEAD
               className="block text-[10px] sm:text-xs font-medium tracking-wider uppercase text-(--parchment-muted) mb-1.5 sm:mb-2"
+=======
+              className="mono-label block mb-2"
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             >
               Contraseña
             </label>
@@ -176,15 +215,23 @@ export default function LoginPage() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
+<<<<<<< HEAD
               className={`quest-input w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl! text-sm sm:text-base ${errors.password ? "field-error" : ""}`}
+=======
+              className={`input-field w-full px-4 py-3 ${errors.password ? "field-error" : ""}`}
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               placeholder="••••••••"
               disabled={isLoading}
             />
             {errors.password && (
+<<<<<<< HEAD
               <p
                 className="mt-1.5 text-xs sm:text-sm"
                 style={{ color: "#e08b85" }}
               >
+=======
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
                 {errors.password}
               </p>
             )}
@@ -195,6 +242,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
+<<<<<<< HEAD
             className="button-retro-violet w-full sm:w-auto "
           >
             {isLoading ? (
@@ -203,6 +251,13 @@ export default function LoginPage() {
                   className="animate-spin h-5 w-5 inline-block mr-2"
                   viewBox="0 0 24 24"
                 >
+=======
+            className="btn-primary w-full py-3 px-4 flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <svg className="spinner h-5 w-5" viewBox="0 0 24 24">
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -228,12 +283,13 @@ export default function LoginPage() {
         </form>
 
         {/* Link to register */}
+<<<<<<< HEAD
         <p className="text-center text-(--parchment-muted) mt-5 sm:mt-6 text-xs sm:text-sm">
+=======
+        <p className="text-center mt-6 text-sm" style={{ color: 'var(--ink-muted)' }}>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
           ¿No tenés cuenta?{" "}
-          <Link
-            href="/register"
-            className="text-(--gold) hover:text-(--gold-bright) font-medium transition-colors"
-          >
+          <Link href="/register" className="accent-link font-medium">
             Registrate
           </Link>
         </p>

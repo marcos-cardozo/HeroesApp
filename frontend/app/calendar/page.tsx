@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 
 import { AuthGuard } from '@/components/AuthGuard';
@@ -30,5 +31,16 @@ export default function CalendarPage() {
     <AuthGuard>
       <CalendarContent />
     </AuthGuard>
+=======
+import { ComingSoonPage } from '@/components/ComingSoonPage';
+
+export default function CalendarPage() {
+  return (
+    <ComingSoonPage
+      eyebrow="— Módulo 02"
+      title="Calendario"
+      description="Visualizá tu progreso en el tiempo. Eventos, hitos y consistencia en una línea clara."
+    />
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
   );
 }

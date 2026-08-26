@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 
 import { AuthGuard } from '@/components/AuthGuard';
@@ -30,5 +31,16 @@ export default function BossFightPage() {
     <AuthGuard>
       <BossFightContent />
     </AuthGuard>
+=======
+import { ComingSoonPage } from '@/components/ComingSoonPage';
+
+export default function BossFightPage() {
+  return (
+    <ComingSoonPage
+      eyebrow="— Módulo 03"
+      title="Boss Fight"
+      description="Desafíos de alta intensidad. Poné a prueba tu disciplina con retos estructurados."
+    />
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
   );
 }

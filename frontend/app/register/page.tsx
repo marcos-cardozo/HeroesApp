@@ -85,6 +85,7 @@ export default function RegisterPage() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="quest-bg min-h-screen flex items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
       <div className="quest-rise w-full max-w-sm sm:max-w-md">
         {/* Header */}
@@ -114,10 +115,29 @@ export default function RegisterPage() {
           </h1>
           <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-[var(--parchment-muted)]">
             Creá tu cuenta y empezá tu primera misión
+=======
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: 'var(--void)' }}>
+      <div className="rise w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="mx-auto mb-5 h-12 w-12 flex items-center justify-center">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+              <rect x="4" y="4" width="40" height="40" rx="4" stroke="var(--accent)" strokeWidth="1.5" fill="var(--accent-soft)" />
+              <path d="M24 14L30 24L24 34L18 24L24 14Z" fill="var(--accent)" />
+            </svg>
+          </div>
+          <p className="mono-label mb-3">— Heroes App</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: 'var(--ink)' }}>
+            Creá tu cuenta
+          </h1>
+          <p className="mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
+            Empezá a construir tus hábitos
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
           </p>
         </div>
 
         {/* Form */}
+<<<<<<< HEAD
         <form
           onSubmit={handleSubmit}
           className="quest-panel p-5 sm:p-7 md:p-9 space-y-5 sm:space-y-6 rounded-2xl!"
@@ -138,92 +158,136 @@ export default function RegisterPage() {
             >
               {apiError}
             </div>
+=======
+        <form onSubmit={handleSubmit} className="panel p-7 sm:p-8 space-y-5">
+          {apiError && (
+            <div className="alert-error px-4 py-3 text-sm">{apiError}</div>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
           )}
 
           {/* Nombre */}
           <div>
+<<<<<<< HEAD
             <label
               htmlFor="nombre"
               className="block text-[10px] sm:text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-1.5 sm:mb-2"
             >
+=======
+            <label htmlFor="nombre" className="mono-label block mb-2">
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               Nombre
             </label>
             <input
               id="nombre"
               type="text"
               value={formData.nombre}
+<<<<<<< HEAD
               onChange={(e) =>
                 setFormData({ ...formData, nombre: e.target.value })
               }
               className={`quest-input w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl! text-sm sm:text-base ${errors.nombre ? "field-error" : ""}`}
+=======
+              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              className={`input-field w-full px-4 py-3 ${errors.nombre ? 'field-error' : ''}`}
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               placeholder="Tu nombre"
               disabled={isLoading}
             />
             {errors.nombre && (
+<<<<<<< HEAD
               <p
                 className="mt-1.5 text-xs sm:text-sm"
                 style={{ color: "#e08b85" }}
               >
                 {errors.nombre}
               </p>
+=======
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>{errors.nombre}</p>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             )}
           </div>
 
           {/* Email */}
           <div>
+<<<<<<< HEAD
             <label
               htmlFor="email"
               className="block text-[10px] sm:text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-1.5 sm:mb-2"
             >
+=======
+            <label htmlFor="email" className="mono-label block mb-2">
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               Email
             </label>
             <input
               id="email"
               type="email"
               value={formData.email}
+<<<<<<< HEAD
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
               className={`quest-input w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl! text-sm sm:text-base ${errors.email ? "field-error" : ""}`}
+=======
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className={`input-field w-full px-4 py-3 ${errors.email ? 'field-error' : ''}`}
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               placeholder="tu@email.com"
               disabled={isLoading}
             />
             {errors.email && (
+<<<<<<< HEAD
               <p
                 className="mt-1.5 text-xs sm:text-sm"
                 style={{ color: "#e08b85" }}
               >
                 {errors.email}
               </p>
+=======
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>{errors.email}</p>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             )}
           </div>
 
           {/* Password */}
           <div>
+<<<<<<< HEAD
             <label
               htmlFor="password"
               className="block text-[10px] sm:text-xs font-medium tracking-wider uppercase text-[var(--parchment-muted)] mb-1.5 sm:mb-2"
             >
+=======
+            <label htmlFor="password" className="mono-label block mb-2">
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               Contraseña
             </label>
             <input
               id="password"
               type="password"
               value={formData.password}
+<<<<<<< HEAD
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
               className={`quest-input w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl! text-sm sm:text-base ${errors.password ? "field-error" : ""}`}
+=======
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className={`input-field w-full px-4 py-3 ${errors.password ? 'field-error' : ''}`}
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
               placeholder="••••••••"
               disabled={isLoading}
             />
             {errors.password && (
+<<<<<<< HEAD
               <p
                 className="mt-1.5 text-xs sm:text-sm"
                 style={{ color: "#e08b85" }}
               >
                 {errors.password}
               </p>
+=======
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--danger)' }}>{errors.password}</p>
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             )}
           </div>
 
@@ -232,6 +296,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
+<<<<<<< HEAD
             className="button-retro-violet w-full sm:w-auto"
           >
             {isLoading ? (
@@ -254,6 +319,15 @@ export default function RegisterPage() {
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
+=======
+            className="btn-primary w-full py-3 px-4 flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <svg className="spinner h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
                 </svg>
                 Registrando...
               </>
@@ -265,12 +339,18 @@ export default function RegisterPage() {
         </form>
 
         {/* Link to login */}
+<<<<<<< HEAD
         <p className="text-center text-[var(--parchment-muted)] mt-5 sm:mt-6 text-xs sm:text-sm">
           ¿Ya tenés cuenta?{" "}
           <Link
             href="/login"
             className="text-[var(--gold)] hover:text-[var(--gold-bright)] font-medium transition-colors"
           >
+=======
+        <p className="text-center mt-6 text-sm" style={{ color: 'var(--ink-muted)' }}>
+          ¿Ya tenés cuenta?{' '}
+          <Link href="/login" className="accent-link font-medium">
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
             Iniciá sesión
           </Link>
         </p>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 
 import { AuthGuard } from '@/components/AuthGuard';
@@ -30,5 +31,16 @@ export default function HabitsPage() {
     <AuthGuard>
       <HabitsContent />
     </AuthGuard>
+=======
+import { ComingSoonPage } from '@/components/ComingSoonPage';
+
+export default function HabitsPage() {
+  return (
+    <ComingSoonPage
+      eyebrow="— Módulo 01"
+      title="Hábitos"
+      description="Construinos día a día. Definí, seguí y sostené tus hábitos con seguimiento simple y disciplinado."
+    />
+>>>>>>> 03678f32c1a5e7f1b1df29389ff3e8c036972211
   );
 }

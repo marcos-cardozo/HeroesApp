@@ -23,10 +23,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--void)' }}>
         <div className="text-center">
-          <div className="animate-spin h-12 w-12 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-zinc-400">Cargando...</p>
+          <div
+            className="spinner h-8 w-8 border-2 rounded-full mx-auto mb-4"
+            style={{ borderColor: 'var(--panel-edge)', borderTopColor: 'var(--accent)' }}
+          />
+          <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>Cargando...</p>
         </div>
       </div>
     );
