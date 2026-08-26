@@ -6,10 +6,48 @@ export interface User {
 
 export interface AuthResponse {
   user: User;
-  access_token: string;
+  accessToken: string;
 }
 
 export interface ApiError {
   message: string;
   statusCode?: number;
+}
+
+export interface MoodBoardImage {
+  id: string;
+  imageUrl: string;
+  order: number;
+}
+
+export interface KeyBelief {
+  id: string;
+  text: string;
+  order: number;
+}
+
+export interface PortalSlideImage {
+  id: string;
+  imageUrl: string;
+  order: number;
+}
+
+export interface PortalSlide {
+  id: string;
+  title: string | null;
+  narrativeText: string | null;
+  order: number;
+  images: PortalSlideImage[];
+}
+
+export interface PortalNarrative {
+  id: string;
+  text: string;
+}
+
+export interface PortalData {
+  moodBoard: MoodBoardImage[];
+  beliefs: KeyBelief[];
+  slides: PortalSlide[];
+  narrative: PortalNarrative | null;
 }
