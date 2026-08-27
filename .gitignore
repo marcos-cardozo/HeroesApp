@@ -14,6 +14,9 @@ yarn-error.log*
 # Directorios de compilación o distribución
 dist/
 build/
+.next/
+next-env.d.ts
+*.tsbuildinfo
 
 # Editor y sistema operativo
 .DS_Store
