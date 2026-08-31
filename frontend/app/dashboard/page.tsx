@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthGuard } from '@/components/AuthGuard';
 import { AppHeader } from '@/components/AppHeader';
-import { getAuthToken, removeAuthToken } from '@/lib/api';
+import { authApi, getAuthToken, removeAuthToken } from '@/lib/api';
 import { User } from '@/lib/types';
 
 function DashboardContent() {
@@ -21,19 +21,8 @@ function DashboardContent() {
           return;
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          removeAuthToken();
-          router.push('/login');
-        }
+        const data = await authApi.getProfile();
+        setUser(data);
       } catch {
         removeAuthToken();
         router.push('/login');

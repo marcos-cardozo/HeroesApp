@@ -442,19 +442,21 @@ body {
   box-shadow: 0 0 0 1px transparent;
 }
 
-/* ---- LinkModal: overlay con scope al contenedor central ----
-   El overlay es position: absolute; inset: 0 dentro de un contenedor
-   con position: relative (el <main> del portal). Por eso el blur/dimmer
-   afecta SOLO esa zona, no al AppHeader ni al resto de la página. */
+/* ---- LinkModal / ConfirmDialog: overlay a pantalla completa ----
+   position: fixed; inset: 0 → cubre todo el viewport (incluye AppHeader).
+   El panel se centra con margin:auto; si es más alto que la pantalla el
+   overlay hace scroll y el panel se apoya arriba. El scroll de la página
+   de fondo lo bloquea el componente (body overflow:hidden mientras abre). */
 
 .link-modal-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 60;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: clamp(1rem, 6vw, 4rem) 1rem 2rem;
+  overflow-y: auto;
+  padding: clamp(1rem, 6vw, 4rem) 1rem;
   background: rgba(0, 0, 0, 0.6);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
@@ -469,7 +471,7 @@ body {
 .link-modal-panel {
   width: 100%;
   max-width: 28rem;
-  margin-top: 8vh;
+  margin: auto;
   padding: 1.75rem 1.75rem 1.5rem;
   animation: link-modal-pop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -484,14 +486,477 @@ body {
   .link-modal-panel { animation: none; }
 }
 
-/* En viewports estrechos evitamos que el panel se pegue a los bordes y
-   permitimos scroll dentro del overlay si hace falta. */
 @media (max-width: 640px) {
-  .link-modal-overlay {
-    align-items: flex-start;
-    padding: 1rem 0.75rem 2rem;
-    overflow-y: auto;
-  }
-  .link-modal-panel { margin-top: 4vh; }
+  .link-modal-overlay { padding: 1rem 0.75rem; }
 }
 
+/* =========================================================================
+   MOOD BOARD — tablero de inspiración (Portal · Slide 01)
+   Grid fijo de 8 celdas (2×4). Fila superior 340/453, inferior 340/639.
+   ========================================================================= */
+
+.moodboard-frame {
+  /* Color del glow de neón: el acento del proyecto en RGB, para poder
+     componer rgba() con distintas opacidades. Se puede sobrescribir en una
+     celda concreta si alguna vez hay acentos por celda. */
+  --mb-glow-rgb: 124, 108, 255;
+  position: relative; /* ancla del botón de pantalla completa (.moodboard-expand) */
+  padding: clamp(0.75rem, 2vw, 1.25rem);
+  border: 1px solid var(--panel-edge);
+  border-radius: 16px;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.008)
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition:
+    border-color 300ms ease-out,
+    box-shadow 320ms ease-out,
+    transform 300ms ease-out;
+}
+
+/* Hover del contenedor completo del moodboard: halo de neón ambiental muy
+   tenue. Solo con el mouse encima; no se ve iluminado de forma permanente. */
+.moodboard-frame:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--mb-glow-rgb), 0.32);
+  box-shadow:
+    0 0 0 1px rgba(var(--mb-glow-rgb), 0.12),
+    0 22px 60px -28px rgba(var(--mb-glow-rgb), 0.4),
+    0 0 70px -30px rgba(var(--mb-glow-rgb), 0.26);
+}
+
+.moodboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.4rem, 1.2vw, 0.75rem);
+}
+
+.moodboard-cell {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.015);
+  transition:
+    border-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moodboard-cell--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-muted);
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    background-color 240ms ease-out,
+    border-color 240ms ease-out,
+    box-shadow 300ms ease-out,
+    color 240ms ease-out,
+    transform 240ms ease-out;
+}
+
+.moodboard-cell--empty:hover,
+.moodboard-cell--empty:focus-visible {
+  background: var(--accent-soft);
+  border-color: rgba(var(--mb-glow-rgb), 0.65);
+  color: var(--ink);
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(var(--mb-glow-rgb), 0.26),
+    0 8px 26px -12px rgba(var(--mb-glow-rgb), 0.5);
+}
+
+.moodboard-cell.is-dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    0 0 30px -8px rgba(var(--mb-glow-rgb), 0.55);
+}
+
+.moodboard-media {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+.moodboard-media img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transform-origin: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Solo transicionamos `scale` (propiedad independiente) y `filter`. El
+     `transform` inline lo maneja el pan/zoom y debe seguir siendo instantáneo. */
+  transition:
+    scale 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 320ms ease-out;
+}
+
+.moodboard-cell--filled:hover .moodboard-media img {
+  scale: 1.02;
+  filter: brightness(1.04);
+}
+
+.moodboard-broken {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+}
+
+.moodboard-enter {
+  animation: moodboard-enter 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes moodboard-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Glow de neón progresivo al interactuar con una celda con imagen.
+   El halo EXTERNO va en la propia celda (su box-shadow no lo recorta el
+   overflow:hidden); el ::after aporta la iluminación interna del borde. */
+.moodboard-cell--filled::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow 320ms ease-out;
+}
+
+.moodboard-cell--filled:hover,
+.moodboard-cell--filled:focus-within {
+  transform: translateY(-1px);
+  border-color: rgba(var(--mb-glow-rgb), 0.5);
+  box-shadow:
+    0 0 0 1px rgba(var(--mb-glow-rgb), 0.24),
+    0 10px 34px -14px rgba(var(--mb-glow-rgb), 0.5),
+    0 0 42px -16px rgba(var(--mb-glow-rgb), 0.4);
+}
+
+.moodboard-cell--filled:hover::after,
+.moodboard-cell--filled:focus-within::after {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--mb-glow-rgb), 0.45),
+    inset 0 0 26px -8px rgba(var(--mb-glow-rgb), 0.28);
+}
+
+.moodboard-overlay-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 10, 11, 0.72);
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition:
+    opacity 220ms ease-out,
+    background-color 200ms ease-out,
+    color 200ms ease-out,
+    border-color 200ms ease-out,
+    box-shadow 240ms ease-out,
+    transform 200ms ease-out;
+}
+
+.moodboard-overlay-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #0a0a0b;
+  border-color: rgba(var(--mb-glow-rgb), 0.65);
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(var(--mb-glow-rgb), 0.3),
+    0 6px 18px -8px rgba(var(--mb-glow-rgb), 0.55);
+}
+
+.moodboard-overlay-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 0 0 1px rgba(var(--mb-glow-rgb), 0.3);
+}
+
+.moodboard-overlay-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.moodboard-zoom,
+.moodboard-del {
+  position: absolute;
+  z-index: 2;
+  opacity: 0;
+}
+
+/* El botón de borrar (.moodboard-del) es además .moodboard-overlay-btn y
+   toma de ahí su transición (que ya incluye `opacity`). El contenedor de
+   zoom es un div y solo necesita el fundido. */
+.moodboard-zoom {
+  transition: opacity 220ms ease-out;
+}
+
+.moodboard-zoom {
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.moodboard-del {
+  top: 8px;
+  right: 8px;
+}
+
+.moodboard-cell--filled:hover .moodboard-zoom,
+.moodboard-cell--filled:hover .moodboard-del,
+.moodboard-cell--filled:focus-within .moodboard-zoom,
+.moodboard-cell--filled:focus-within .moodboard-del {
+  opacity: 1;
+}
+
+.moodboard-complete {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+.moodboard-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vmin;
+  background: rgba(0, 0, 0, 0.82);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation: link-modal-fade 180ms ease both;
+}
+
+.moodboard-lightbox img {
+  max-height: 90vh;
+  max-width: 92vw;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moodboard-enter,
+  .moodboard-lightbox {
+    animation: none;
+  }
+  /* El glow (color/box-shadow) se mantiene; solo anulamos el movimiento. */
+  .moodboard-cell--filled:hover,
+  .moodboard-cell--filled:focus-within,
+  .moodboard-cell--empty:hover,
+  .moodboard-cell--empty:focus-visible,
+  .moodboard-overlay-btn:hover:not(:disabled) {
+    transform: none;
+  }
+  .moodboard-cell--filled:hover .moodboard-media img {
+    scale: 1;
+    filter: none;
+  }
+}
+
+/* Concesión responsive: el spec pide 4 columnas fijas, pero por debajo de
+   640px las celdas quedarían inusables. Bajamos a 2 columnas. */
+@media (max-width: 640px) {
+  .moodboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.moodboard-frame {
+  max-width: 730px;     /* el ancho que quieras */
+  margin-inline: auto;  /* opcional: lo centra */
+}
+
+/* ---- Aparición al entrar en viewport (scroll reveal) ----
+   El elemento arranca desplazado + transparente; cuando el
+   IntersectionObserver (useInView) le agrega .is-visible, sube a su
+   lugar. Sin JS o con movimiento reducido queda visible sin animar. */
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 620ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* =========================================================================
+   MOOD BOARD — Focus Mode (pantalla completa)
+   Mismo lenguaje que los modales de la app: overlay fixed a pantalla
+   completa + backdrop-filter. El bloqueo de scroll del body lo hace el
+   componente (igual que LinkModal / MoodBoardLightbox).
+   El frame es EXACTAMENTE el mismo nodo que en la página (no se duplica ni
+   se remonta): solo cambia el contenedor que lo envuelve.
+   ========================================================================= */
+
+.moodboard-stage--fs {
+  position: fixed;
+  inset: 0;
+  z-index: 55; /* sobre la página; debajo de LinkModal (60) y Lightbox (80) */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+  padding: clamp(1rem, 4vmin, 3rem);
+  background: rgba(0, 0, 0, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: moodboard-fs-in 300ms ease both;
+}
+
+.moodboard-stage--fs.is-closing {
+  animation: moodboard-fs-out 260ms ease both;
+}
+
+/* Preview premium: el frame entra COMPLETO en el viewport sin scroll, con
+   aire alrededor. El ancho se limita también por altura (`96vh`) porque las
+   celdas tienen aspect-ratio fijo, así que el alto crece con el ancho. Nada
+   de transform: scale() — es tamaño real, no interfiere con las interacciones.
+   `max-height` + `overflow` son la última red por si la pantalla es muy baja. */
+.moodboard-stage--fs .moodboard-frame {
+  width: min(720px, 88vw, 96vh);
+  max-width: none;
+  max-height: 90vh;
+  overflow: auto;
+  margin: auto;
+  /* En Focus Mode el frame "flota": sombra profunda + halo de acento muy
+     tenue en reposo. El hover lo intensifica un poco más. */
+  border-color: rgba(var(--mb-glow-rgb), 0.22);
+  box-shadow:
+    0 0 0 1px rgba(var(--mb-glow-rgb), 0.1),
+    0 40px 120px -40px rgba(0, 0, 0, 0.7),
+    0 0 90px -40px rgba(var(--mb-glow-rgb), 0.28);
+  animation: moodboard-fs-pop 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.moodboard-stage--fs .moodboard-frame:hover {
+  border-color: rgba(var(--mb-glow-rgb), 0.34);
+  box-shadow:
+    0 0 0 1px rgba(var(--mb-glow-rgb), 0.14),
+    0 40px 120px -40px rgba(0, 0, 0, 0.7),
+    0 0 100px -36px rgba(var(--mb-glow-rgb), 0.36);
+}
+
+.moodboard-stage--fs.is-closing .moodboard-frame {
+  animation: moodboard-fs-pop-out 240ms ease both;
+}
+
+.moodboard-fs-close {
+  position: fixed;
+  top: clamp(0.75rem, 2.5vmin, 1.25rem);
+  right: clamp(0.75rem, 2.5vmin, 1.25rem);
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  font-size: 1.15rem;
+}
+
+/* Botón de "pantalla completa" integrado en el propio moodboard: esquina
+   superior derecha del frame, sobre la primera fila. Discreto en reposo,
+   se ilumina (opacidad + hover neón de .moodboard-overlay-btn) al pasar el
+   mouse por el moodboard o por el botón. La transición de opacidad la aporta
+   .moodboard-overlay-btn. */
+.moodboard-expand {
+  position: absolute;
+  top: clamp(0.5rem, 1.5vw, 0.8rem);
+  right: clamp(0.5rem, 1.5vw, 0.8rem);
+  z-index: 3;
+  opacity: 0.5;
+}
+
+.moodboard-frame:hover .moodboard-expand,
+.moodboard-expand:hover,
+.moodboard-expand:focus-visible {
+  opacity: 1;
+}
+
+/* Ya estás en pantalla completa: el botón no tiene sentido acá. */
+.moodboard-stage--fs .moodboard-expand {
+  display: none;
+}
+
+@keyframes moodboard-fs-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes moodboard-fs-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes moodboard-fs-pop {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes moodboard-fs-pop-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.985); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moodboard-stage--fs,
+  .moodboard-stage--fs .moodboard-frame {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .moodboard-stage--fs {
+    padding: 0.75rem;
+  }
+  .moodboard-fs-close {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}

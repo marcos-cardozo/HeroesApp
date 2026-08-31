@@ -48,10 +48,26 @@ export function LinkModal({
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Valor de `open` en el render anterior, para detectar la transición
+  // cerrado -> abierto.
+  const [wasOpen, setWasOpen] = useState(open);
 
-  // Autofocus + Escape. El estado se reinicia en cada apertura porque el
-  // componente se desmonta al cerrar (ver `if (!open) return null` abajo),
-  // por lo que useState(initialValue) arranca limpio cada vez.
+  // OJO: `if (!open) return null` (más abajo) NO desmonta el componente, solo
+  // deja de pintarlo; la instancia y su estado siguen vivos entre aperturas.
+  // Por eso reseteamos el formulario explícitamente en cada apertura,
+  // comparando con `open` del render anterior (ajuste de estado en render, sin
+  // efecto extra). Cada carga arranca limpia: URL vacía, sin error y con el
+  // botón en su estado normal.
+  if (open && !wasOpen) {
+    setWasOpen(true);
+    setValue(initialValue);
+    setError(null);
+    setSubmitting(false);
+  } else if (!open && wasOpen) {
+    setWasOpen(false);
+  }
+
+  // Autofocus, Escape y bloqueo de scroll mientras el modal está abierto.
   useEffect(() => {
     if (!open) return;
 
@@ -66,14 +82,15 @@ export function LinkModal({
     };
     window.addEventListener('keydown', handleKey);
 
-    // No bloqueamos el scroll global: el overlay es absoluto al contenedor
-    // central, así que el header y el resto de la página siguen siendo
-    // navegables.
+    // Bloqueamos el scroll de la página de fondo mientras el modal está abierto.
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     const triggerEl = triggerRef?.current ?? null;
     return () => {
       window.clearTimeout(t);
       window.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = prevOverflow;
       const target = triggerEl ?? previouslyFocused;
       if (target && typeof target.focus === 'function') {
         target.focus();
@@ -123,9 +140,15 @@ export function LinkModal({
     try {
       setSubmitting(true);
       await onSubmit(trimmed);
+      // Guardado OK: dejamos el formulario limpio antes de cerrar, así la
+      // próxima apertura es una operación completamente nueva.
+      setValue(initialValue);
+      setError(null);
       onClose();
     } catch {
       setError('No se pudo guardar. Intentá de nuevo.');
+    } finally {
+      // Pase lo que pase, el botón vuelve a su estado normal.
       setSubmitting(false);
     }
   };
